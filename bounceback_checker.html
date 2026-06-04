@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bounceback Checker — VA GMed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5f6fa;
+    min-height: 100vh;
+    color: #1a1d2e;
+  }
+
+  .header {
+    background: #ffffff;
+    border-bottom: 1px solid #e4e6f0;
+    padding: 14px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .header h1 {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: #2563eb;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .va-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .header p {
+    font-size: 12px;
+    color: #9ca3b8;
+    font-weight: 300;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: #e4e6f0;
+    margin-top: 10px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .main {
+    padding: 24px 20px;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .screen { display: none; animation: fadeUp 0.22s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #b0b8d0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .question {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1a1d2e;
+    line-height: 1.45;
+    margin-bottom: 6px;
+  }
+
+  .question-note {
+    font-size: 13px;
+    color: #6b7494;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .opt-btn {
+    background: #ffffff;
+    border: 1.5px solid #e4e6f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #3a3f58;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.14s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .opt-btn:hover {
+    background: #f0f4ff;
+    border-color: #2563eb;
+    color: #1a1d2e;
+  }
+
+  .opt-btn:active { transform: scale(0.99); }
+
+  .opt-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: #2563eb;
+    font-weight: 500;
+  }
+
+  .opt-label { flex: 1; line-height: 1.4; }
+  .opt-sub { font-size: 11px; color: #9ca3b8; margin-top: 3px; font-weight: 300; }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: #b0b8d0;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.04em;
+    transition: color 0.14s;
+  }
+  .back-btn:hover { color: #6b7494; }
+
+  .result-card {
+    background: #ffffff;
+    border: 1.5px solid #e4e6f0;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .result-header {
+    padding: 18px 20px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .result-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 17px;
+  }
+
+  .result-icon.green { background: #dcfce7; color: #16a34a; }
+  .result-icon.red   { background: #fee2e2; color: #dc2626; }
+  .result-icon.amber { background: #fef9c3; color: #ca8a04; }
+  .result-icon.blue  { background: #dbeafe; color: #2563eb; }
+
+  .result-verdict {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .result-verdict.green { color: #16a34a; }
+  .result-verdict.red   { color: #dc2626; }
+  .result-verdict.amber { color: #ca8a04; }
+  .result-verdict.blue  { color: #2563eb; }
+
+  .result-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1d2e;
+    line-height: 1.4;
+  }
+
+  .result-divider { height: 1px; background: #f0f2f8; margin: 0 20px; }
+
+  .result-body { padding: 14px 20px 18px; }
+
+  .result-detail {
+    font-size: 13px;
+    color: #6b7494;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    font-weight: 300;
+  }
+
+  .result-rule {
+    background: #f8f9fc;
+    border: 1px solid #e4e6f0;
+    border-left: 3px solid #e4e6f0;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 12.5px;
+    color: #4a5070;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .result-rule.green { border-left-color: #16a34a; }
+  .result-rule.red   { border-left-color: #dc2626; }
+  .result-rule.amber { border-left-color: #ca8a04; }
+  .result-rule.blue  { border-left-color: #2563eb; }
+
+  .restart-btn {
+    width: 100%;
+    background: #ffffff;
+    border: 1.5px solid #e4e6f0;
+    border-radius: 10px;
+    padding: 13px;
+    color: #2563eb;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.14s;
+  }
+  .restart-btn:hover { background: #f0f4ff; border-color: #2563eb; }
+
+  .home-screen { padding-top: 4px; }
+
+  .home-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #b0b8d0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .home-title {
+    font-size: 26px;
+    font-weight: 500;
+    color: #1a1d2e;
+    line-height: 1.25;
+    margin-bottom: 8px;
+  }
+
+  .home-title span { color: #2563eb; }
+
+  .home-sub {
+    font-size: 13px;
+    color: #6b7494;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .service-btn {
+    background: #ffffff;
+    border: 1.5px solid #e4e6f0;
+    border-radius: 10px;
+    padding: 16px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.14s;
+    color: #6b7494;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .service-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #f0f4ff;
+  }
+
+  .service-btn:active { transform: scale(0.97); }
+
+  .service-btn .svc-abbr {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    color: #2563eb;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .footnote {
+    font-size: 11px;
+    color: #c8cdd8;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    padding-top: 4px;
+  }
+
+  .site-note {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #92400e;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>Bounceback Checker</h1>
+    <span class="va-badge">VA GMed</span>
+  </div>
+  <p>Walk through eligibility and routing step by step</p>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+</div>
+
+<div class="main">
+
+  <!-- HOME -->
+  <div class="screen active home-screen" id="screen-home">
+    <p class="home-eyebrow">VA GLA · General Medicine</p>
+    <p class="home-title">Is this patient a <span>bounceback?</span></p>
+    <p class="home-sub">Answer a few questions to determine eligibility and who admits the patient. Select the service to begin.</p>
+    <div class="site-note">VA policies only — bounceback rules differ at UCLA.</div>
+    <div class="service-grid">
+      <div class="service-btn" onclick="startService('gmed')"><span class="svc-abbr">GM</span>General Medicine</div>
+      <div class="service-btn" onclick="startService('geri')"><span class="svc-abbr">GR</span>Geriatrics</div>
+      <div class="service-btn" onclick="startService('cards')"><span class="svc-abbr">CA</span>Cardiology</div>
+    </div>
+    <p class="footnote">Last updated June 2026</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="screen" id="screen-q1">
+    <p class="step-label">Step 1 of 5 — Eligibility</p>
+    <p class="question">Was this patient cared for by this team within the past 14 days?</p>
+    <p class="question-note">Counts from the date the team last had primary responsibility. Night float and cross-cover do not count.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q1','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — within 14 days</div></button>
+      <button class="opt-btn" onclick="answer('q1','no')"><div class="opt-icon">N</div><div class="opt-label">No — more than 14 days, or never cared for by this team</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q2 Cardiology only -->
+  <div class="screen" id="screen-q2">
+    <p class="step-label">Step 2 of 5 — Eligibility</p>
+    <p class="question">Is the chief concern cardiac, or a problem actively addressed during the prior admission?</p>
+    <p class="question-note">Cardiology bouncebacks require the chief concern to be cardiac in nature or a previously managed issue. A new unrelated problem does not qualify.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q2','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — cardiac or previously addressed issue</div></button>
+      <button class="opt-btn" onclick="answer('q2','no')"><div class="opt-icon">N</div><div class="opt-label">No — new unrelated problem</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q3 Last day -->
+  <div class="screen" id="screen-q3">
+    <p class="step-label" id="q3-label">Step 3 of 5 — Eligibility</p>
+    <p class="question" id="q3-text">Is today the original intern's last day of service?</p>
+    <p class="question-note" id="q3-note">If yes, the patient cannot bounce back regardless of any other circumstances. This rule is absolute.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q3','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — last day of service</div></button>
+      <button class="opt-btn" onclick="answer('q3','no')"><div class="opt-icon">N</div><div class="opt-label">No — not last day</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q4 Presence -->
+  <div class="screen" id="screen-q4">
+    <p class="step-label">Step 4 of 5 — Eligibility</p>
+    <p class="question" id="q4-text">Is the original intern present today?</p>
+    <p class="question-note" id="q4-note">If the intern is off, the answer depends on whether the current resident previously cared for this patient.</p>
+    <div class="options" id="q4-options"></div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q5 Source -->
+  <div class="screen" id="screen-q5">
+    <p class="step-label">Step 5 of 5 — Routing</p>
+    <p class="question">Where is the patient coming from?</p>
+    <p class="question-note">This determines which admission routing rules apply.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q5','ed')"><div class="opt-icon">ED</div><div class="opt-label">Emergency Department</div></button>
+      <button class="opt-btn" onclick="answer('q5','icu')"><div class="opt-icon">ICU</div><div class="opt-label">ICU / step-down (downgrade)</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q6 Day type -->
+  <div class="screen" id="screen-q6">
+    <p class="step-label">Routing</p>
+    <p class="question">Is today a weekday or weekend / holiday?</p>
+    <p class="question-note"></p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q6','weekday')"><div class="opt-icon">WD</div><div class="opt-label">Weekday — Monday through Friday, non-holiday</div></button>
+      <button class="opt-btn" onclick="answer('q6','weekend')"><div class="opt-icon">WE</div><div class="opt-label">Weekend or holiday</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q7 ED weekday time -->
+  <div class="screen" id="screen-q7-ed-wd">
+    <p class="step-label">Routing — ED weekday</p>
+    <p class="question">What time is it now?</p>
+    <p class="question-note">The 4 PM cutoff governs who handles the admission on a weekday.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q7edwd','before4')"><div class="opt-icon">&lt;4</div><div class="opt-label">Before 4 PM</div></button>
+      <button class="opt-btn" onclick="answer('q7edwd','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q7b Long call after 4pm weekday -->
+  <div class="screen" id="screen-q7-lc">
+    <p class="step-label">Routing — ED weekday after 4 PM</p>
+    <p class="question">Does this bounceback belong to the long call team?</p>
+    <p class="question-note">After 4 PM, long call can admit their own bouncebacks only if they have not capped — 20 total patients, or the bounceback intern already has 10.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q7lc','yes-open')"><div class="opt-icon">Y</div><div class="opt-label">Yes — and long call has not capped</div></button>
+      <button class="opt-btn" onclick="answer('q7lc','yes-capped')"><div class="opt-icon">Y</div><div class="opt-label">Yes — but long call is capped</div></button>
+      <button class="opt-btn" onclick="answer('q7lc','no')"><div class="opt-icon">N</div><div class="opt-label">No — belongs to a different team</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q8 ED weekend team type -->
+  <div class="screen" id="screen-q8-ed-we">
+    <p class="step-label">Routing — ED weekend</p>
+    <p class="question">Does this bounceback belong to the long call team or a non-call team?</p>
+    <p class="question-note">On weekends, only one GMed team is on long call and actively admitting. All other teams are non-call.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q8edwe','lc')"><div class="opt-icon">LC</div><div class="opt-label">Long call team</div></button>
+      <button class="opt-btn" onclick="answer('q8edwe','nc')"><div class="opt-icon">NC</div><div class="opt-label">Non-call team</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q9 ED weekend long call time -->
+  <div class="screen" id="screen-q9-ed-we-lc">
+    <p class="step-label">Routing — ED weekend, long call</p>
+    <p class="question">What time is it now?</p>
+    <p class="question-note">Long call can admit their own bouncebacks up to 6 PM on weekends.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q9edwelc','before6')"><div class="opt-icon">&lt;6</div><div class="opt-label">Before 6 PM — long call not capped</div></button>
+      <button class="opt-btn" onclick="answer('q9edwelc','before6-capped')"><div class="opt-icon">&lt;6</div><div class="opt-label">Before 6 PM — but long call is capped</div></button>
+      <button class="opt-btn" onclick="answer('q9edwelc','after6')"><div class="opt-icon">&gt;6</div><div class="opt-label">After 6 PM</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- Q9b ED weekend non-call time -->
+  <div class="screen" id="screen-q9-ed-we-nc">
+    <p class="step-label">Routing — ED weekend, non-call team</p>
+    <p class="question">What time is it now?</p>
+    <p class="question-note">Non-call teams can only accept bouncebacks before noon on weekends.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('q9edwenc','before12')"><div class="opt-icon">&lt;12</div><div class="opt-label">Before noon</div></button>
+      <button class="opt-btn" onclick="answer('q9edwenc','noon-4')"><div class="opt-icon">12–4</div><div class="opt-label">Noon to 4 PM</div></button>
+      <button class="opt-btn" onclick="answer('q9edwenc','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- ICU weekday -->
+  <div class="screen" id="screen-icu-wd">
+    <p class="step-label">Routing — ICU weekday</p>
+    <p class="question">Has the accepting team been notified by 4 PM?</p>
+    <p class="question-note">The ICU must notify the accepting team by 4 PM on weekdays for the transfer to proceed today.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('icuwd','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — notified by 4 PM</div></button>
+      <button class="opt-btn" onclick="answer('icuwd','no')"><div class="opt-icon">N</div><div class="opt-label">No — not notified by 4 PM</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- ICU weekend team -->
+  <div class="screen" id="screen-icu-we">
+    <p class="step-label">Routing — ICU weekend</p>
+    <p class="question">Does this bounceback belong to the long call team or a non-call team?</p>
+    <p class="question-note">Long call has no noon cutoff for ICU bouncebacks on weekends. Non-call teams must be notified by noon.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('icuwe','lc')"><div class="opt-icon">LC</div><div class="opt-label">Long call team</div></button>
+      <button class="opt-btn" onclick="answer('icuwe','nc')"><div class="opt-icon">NC</div><div class="opt-label">Non-call team</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- ICU weekend non-call notification -->
+  <div class="screen" id="screen-icu-we-nc">
+    <p class="step-label">Routing — ICU weekend, non-call team</p>
+    <p class="question">Has the accepting team been notified by noon?</p>
+    <p class="question-note">Non-call teams on weekends must be notified by noon for the ICU transfer to proceed that day.</p>
+    <div class="options">
+      <button class="opt-btn" onclick="answer('icuwenc','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — notified by noon</div></button>
+      <button class="opt-btn" onclick="answer('icuwenc','no')"><div class="opt-icon">N</div><div class="opt-label">No — missed noon cutoff</div></button>
+    </div>
+    <button class="back-btn" onclick="goBack()">← back</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div id="result-content"></div>
+    <button class="restart-btn" onclick="restart()">← start over</button>
+  </div>
+
+</div>
+
+<script>
+  const state = { service: null, history: [], source: null, daytype: null, weTeam: null };
+  let currentScreen = 'home';
+
+  function show(id, prog) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    currentScreen = id;
+    window.scrollTo(0, 0);
+    if (prog !== undefined) document.getElementById('progress').style.width = prog + '%';
+  }
+
+  function startService(svc) {
+    state.service = svc;
+    state.history = ['home'];
+    setupQ3(svc);
+    setupQ4(svc);
+    show('q1', 10);
+  }
+
+  function setupQ3(svc) {
+    if (svc === 'geri') {
+      document.getElementById('q3-text').textContent = "Is today the original Geri resident's last day of service?";
+      document.getElementById('q3-note').textContent = "If yes, the patient cannot bounce regardless of other circumstances. This rule is absolute.";
+    } else {
+      document.getElementById('q3-text').textContent = "Is today the original intern's last day of service?";
+      document.getElementById('q3-note').textContent = "If yes, the patient cannot bounce back regardless of any other circumstances. This rule is absolute.";
+    }
+  }
+
+  function setupQ4(svc) {
+    const opts = document.getElementById('q4-options');
+    if (svc === 'geri') {
+      document.getElementById('q4-text').textContent = "Is the original Geri resident present today?";
+      document.getElementById('q4-note').textContent = "Geri bouncebacks require the original resident to be present. This applies on weekends too.";
+      opts.innerHTML = `
+        <button class="opt-btn" onclick="answer('q4','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — original resident is present</div></button>
+        <button class="opt-btn" onclick="answer('q4','no-geri')"><div class="opt-icon">N</div><div class="opt-label">No — original resident is off today</div></button>`;
+    } else {
+      document.getElementById('q4-text').textContent = "Is the original intern present today?";
+      document.getElementById('q4-note').textContent = "If the intern is off, it depends on whether the current resident previously cared for this patient.";
+      opts.innerHTML = `
+        <button class="opt-btn" onclick="answer('q4','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — original intern is present</div></button>
+        <button class="opt-btn" onclick="answer('q4','res-known')"><div class="opt-icon">N</div><div class="opt-label"><div>No — intern is off</div><div class="opt-sub">Current resident previously cared for this patient</div></div></button>
+        <button class="opt-btn" onclick="answer('q4','res-new')"><div class="opt-icon">N</div><div class="opt-label"><div>No — intern is off</div><div class="opt-sub">Current resident did NOT previously care for this patient</div></div></button>`;
+    }
+  }
+
+  function answer(q, val) {
+    state.history.push(currentScreen);
+    if (q === 'q1') {
+      if (val === 'no') return showResult('not-bb');
+      if (state.service === 'cards') show('q2', 20);
+      else { state.history.push('q2'); show('q3', 30); }
+    } else if (q === 'q2') {
+      if (val === 'no') return showResult('not-bb');
+      show('q3', 30);
+    } else if (q === 'q3') {
+      if (val === 'yes') return showResult('last-day');
+      show('q4', 40);
+    } else if (q === 'q4') {
+      if (val === 'no-geri') return showResult('geri-no-resident');
+      if (val === 'res-new') return showResult('hold-intern');
+      show('q5', 55);
+    } else if (q === 'q5') {
+      state.source = val;
+      show('q6', 65);
+    } else if (q === 'q6') {
+      state.daytype = val;
+      if (state.source === 'ed') show(val === 'weekday' ? 'q7-ed-wd' : 'q8-ed-we', 75);
+      else show(val === 'weekday' ? 'icu-wd' : 'icu-we', 75);
+    } else if (q === 'q7edwd') {
+      if (val === 'before4') return showResult('ed-wd-before4');
+      show('q7-lc', 85);
+    } else if (q === 'q7lc') {
+      if (val === 'yes-open') return showResult('ed-wd-lc-open');
+      return showResult('ed-wd-nar');
+    } else if (q === 'q8edwe') {
+      state.weTeam = val;
+      show(val === 'lc' ? 'q9-ed-we-lc' : 'q9-ed-we-nc', 85);
+    } else if (q === 'q9edwelc') {
+      if (val === 'before6') return showResult('ed-we-lc-before6');
+      return showResult('ed-we-nar');
+    } else if (q === 'q9edwenc') {
+      if (val === 'before12') return showResult('ed-we-nc-before12');
+      if (val === 'noon-4') return showResult('ed-we-nc-noon4');
+      return showResult('ed-we-nar');
+    } else if (q === 'icuwd') {
+      return showResult(val === 'yes' ? 'icu-wd-yes' : 'icu-wd-no');
+    } else if (q === 'icuwe') {
+      if (val === 'lc') return showResult('icu-we-lc');
+      show('icu-we-nc', 85);
+    } else if (q === 'icuwenc') {
+      return showResult(val === 'yes' ? 'icu-we-nc-yes' : 'icu-we-nc-no');
+    }
+  }
+
+  function goBack() {
+    if (state.history.length === 0) { restart(); return; }
+    const prev = state.history.pop();
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + prev).classList.add('active');
+    currentScreen = prev;
+    window.scrollTo(0, 0);
+  }
+
+  const results = {
+    'not-bb': {
+      color:'red', icon:'✕', verdict:'Not a bounceback',
+      title:'This patient does not qualify as a bounceback.',
+      detail:'Either the team has not previously cared for this patient within 14 days, or the chief concern does not meet the eligibility criteria for this service.',
+      rules:['Admit as a standard new admission.','Does not count toward the daily admit cap differently than any other new patient.']
+    },
+    'last-day': {
+      color:'red', icon:'✕', verdict:'Cannot bounce — last day',
+      title:'Patient cannot bounce back on the last day of service.',
+      detail:'This rule is absolute and applies regardless of any other circumstances.',
+      rules:['Treat as a standard new admission.','Assign to the appropriate admitting team per normal call rules.']
+    },
+    'geri-no-resident': {
+      color:'red', icon:'✕', verdict:'Cannot bounce today',
+      title:'Geri bounceback requires the original resident to be present.',
+      detail:'The original Geri resident is not present today. The patient cannot be accepted as a Geri bounceback.',
+      rules:['Hold for the next eligible day when the original resident is present.','See the full VA Geri tab for ICU transfer and overnight holdover rules.']
+    },
+    'hold-intern': {
+      color:'amber', icon:'⏸', verdict:'Hold — await intern return',
+      title:'Patient should be held until the original intern returns.',
+      detail:'The intern is off and the current resident did not previously care for this patient.',
+      rules:['Re-evaluate eligibility at the time of actual assignment — not now.','If the intern\'s next day back is also their last day of service, treat as a new admission instead.','Last-day-of-service restriction is absolute at re-evaluation.']
+    },
+    'ed-wd-before4': {
+      color:'green', icon:'✓', verdict:'Bounceback confirmed',
+      title:'Accepting team admits the patient directly.',
+      detail:'Weekday ED bounceback before 4 PM — the team that owns the bounceback admits and writes the H&P.',
+      rules:['Does NOT count toward the daily admit cap unless this team writes the full H&P.','DOES count toward the hard census cap (max 10 patients per intern).','If team has already hit the daily admit cap, they can still accept this bounceback.']
+    },
+    'ed-wd-lc-open': {
+      color:'green', icon:'✓', verdict:'Bounceback confirmed',
+      title:'Long call team admits directly.',
+      detail:'After 4 PM weekday — this bounceback belongs to the long call team and they have not capped.',
+      rules:['Long call admits and writes the H&P.','Counts toward long call\'s daily admit cap of 8.','Counts toward census cap (max 10 per intern).']
+    },
+    'ed-wd-nar': {
+      color:'blue', icon:'→', verdict:'Night admitting resident',
+      title:'NAR admits — held over for original team next morning.',
+      detail:'After 4 PM weekday: either belongs to a non-long-call team, or long call is capped.',
+      rules:['Night admitting resident (NAR) writes the H&P overnight.','Patient is held over and transferred to the original team the next morning.','Does not count toward the original team\'s daily admit cap.']
+    },
+    'ed-we-lc-before6': {
+      color:'green', icon:'✓', verdict:'Bounceback confirmed',
+      title:'Long call team admits directly.',
+      detail:'Weekend ED bounceback belonging to long call, before 6 PM, team not capped.',
+      rules:['Long call admits and writes the H&P.','Counts toward long call\'s admit cap of 8.','Counts toward census cap (max 10 per intern).']
+    },
+    'ed-we-nar': {
+      color:'blue', icon:'→', verdict:'Night admitting resident',
+      title:'NAR admits — held over for original team next morning.',
+      detail:'Long call team is capped or it is after 6 PM on a weekend.',
+      rules:['NAR writes the H&P.','Patient held over for original team next morning.']
+    },
+    'ed-we-nc-before12': {
+      color:'green', icon:'✓', verdict:'Bounceback confirmed',
+      title:'Non-call accepting team admits directly.',
+      detail:'Weekend ED bounceback before noon — non-call team can still accept.',
+      rules:['Accepting team writes the H&P.','Does not count toward the daily admit cap.','Counts toward census cap (max 10 per intern).']
+    },
+    'ed-we-nc-noon4': {
+      color:'blue', icon:'→', verdict:'Long call admits — holdover',
+      title:'Long call team admits and holds over for original team.',
+      detail:'Weekend noon–4 PM window for a non-call team\'s bounceback — long call steps in.',
+      rules:['Long call writes the full H&P.','Counts toward long call\'s admit cap of 8.','Patient transferred to the original non-call team the next morning.']
+    },
+    'icu-wd-yes': {
+      color:'green', icon:'✓', verdict:'Transfer proceeds today',
+      title:'ICU can transfer to the accepting team today.',
+      detail:'Weekday ICU bounceback — accepting team notified by the 4 PM cutoff.',
+      rules:['Transfer proceeds to the accepting team today.','Does not count toward the daily admit cap (inter-service transfer).','Counts toward census cap.']
+    },
+    'icu-wd-no': {
+      color:'red', icon:'✕', verdict:'ICU retains patient',
+      title:'Transfer cannot proceed today — ICU retains the patient.',
+      detail:'Accepting team was not notified by the 4 PM weekday cutoff.',
+      rules:['ICU continues to care for the patient.','Do NOT transfer to another wards team as an interim — this creates unnecessary handoffs.','Attempt transfer again the following day.']
+    },
+    'icu-we-lc': {
+      color:'green', icon:'✓', verdict:'Transfer proceeds',
+      title:'Long call team accepts the ICU bounceback.',
+      detail:'Weekend ICU bounceback to long call — no noon cutoff applies to long call.',
+      rules:['Transfer proceeds to long call.','ICU may not use long call as a conduit to reach a non-call team.','After-hours transfers require MOD approval — see ICU Nuts & Bolts.']
+    },
+    'icu-we-nc-yes': {
+      color:'green', icon:'✓', verdict:'Transfer proceeds today',
+      title:'ICU can transfer to the non-call team today.',
+      detail:'Weekend ICU bounceback — non-call team notified by the noon cutoff.',
+      rules:['Transfer proceeds to the accepting team today.','Counts toward census cap.']
+    },
+    'icu-we-nc-no': {
+      color:'red', icon:'✕', verdict:'ICU retains patient',
+      title:'Transfer cannot proceed — ICU retains the patient.',
+      detail:'Non-call team was not notified by the noon weekend cutoff. ICU cannot use long call as a conduit.',
+      rules:['ICU continues to care for the patient.','Do NOT transfer to long call as a pass-through — this is not permitted.','After-hours transfers require MOD approval — see ICU Nuts & Bolts.']
+    }
+  };
+
+  function showResult(key) {
+    const r = results[key];
+    const rulesHtml = r.rules.map(rule =>
+      `<div class="result-rule ${r.color}">${rule}</div>`
+    ).join('');
+    document.getElementById('result-content').innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-icon ${r.color}">${r.icon}</div>
+          <div>
+            <div class="result-verdict ${r.color}">${r.verdict}</div>
+            <div class="result-title">${r.title}</div>
+          </div>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-body">
+          <p class="result-detail">${r.detail}</p>
+          ${rulesHtml}
+        </div>
+      </div>`;
+    show('result', 100);
+  }
+
+  function restart() {
+    state.service = null; state.history = []; state.source = null;
+    state.daytype = null; state.weTeam = null;
+    show('home', 0);
+  }
+</script>
+</body>
+</html>
