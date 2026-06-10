@@ -79,6 +79,20 @@
   .restart-btn { width: 100%; background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 13px; color: #2563eb; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; font-weight: 500; }
   .restart-btn:hover { background: #eef2ff; border-color: #2563eb; }
 
+  /* ── RESULT ACTIONS ROW ── */
+  .result-actions { display: flex; gap: 10px; margin-top: 4px; }
+  .result-back-btn { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 13px 18px; color: #7a84a0; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; white-space: nowrap; font-weight: 500; }
+  .result-back-btn:hover { background: #f0f2f8; border-color: #9ca3b8; color: #3d4460; }
+  .result-actions .restart-btn { flex: 1; width: auto; }
+
+  /* ── ANSWER CHIPS ── */
+  .answer-summary { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .answer-summary-label { width: 100%; font-family: 'DM Mono', monospace; font-size: 9px; color: #9ca3b8; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; font-weight: 500; }
+  .answer-chip { display: flex; align-items: center; gap: 5px; background: #f0f2f8; border: 1px solid #d8dce8; border-radius: 20px; padding: 3px 10px 3px 8px; max-width: 100%; }
+  .answer-chip-step { font-family: 'DM Mono', monospace; font-size: 9px; color: #7a84a0; white-space: nowrap; font-weight: 500; }
+  .answer-chip-step::after { content: '·'; margin-left: 5px; color: #d8dce8; }
+  .answer-chip-val { font-size: 11.5px; color: #2a2f48; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
   /* ── HOME SCREEN ── */
   .home-screen { padding-top: 4px; }
   .home-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; color: #7a84a0; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
@@ -369,13 +383,102 @@
   <!-- RESULT -->
   <div class="screen" id="screen-result">
     <div id="result-content"></div>
-    <button class="restart-btn" onclick="restart()">← start over</button>
+    <div class="result-actions">
+      <button class="result-back-btn" onclick="resultGoBack()">← Back</button>
+      <button class="restart-btn" onclick="restart()">↺ Start over</button>
+    </div>
   </div>
 
 </div>
 
 <script>
-  const state = { service: null, history: [], source: null, daytype: null };
+  const state = { service: null, history: [], source: null, daytype: null, answers: [] };
+
+  // ── ANSWER LABEL MAP ──────────────────────────────────────────
+  // Maps [question_key, answer_value] → { step (display name), label (readable value) }
+  const ANSWER_LABELS = {
+    'q1': {
+      label: 'Within 14 days',
+      values: { 'yes': 'Yes', 'no': 'No — not a bounceback' }
+    },
+    'q2': {
+      label: 'Chief concern',
+      values: { 'yes': 'Cardiac / prior issue', 'no': 'Unrelated — not a bounceback' }
+    },
+    'q3': {
+      label: 'Last day of service',
+      values: { 'yes': 'Yes — cannot bounce', 'no': 'No' }
+    },
+    'q4': {
+      label: 'Original intern / resident',
+      values: {
+        'yes': 'Present today',
+        'res-known': 'Intern off — resident knew patient',
+        'res-new': 'Intern off — resident new to patient',
+        'no-geri': 'Resident off — cannot bounce'
+      }
+    },
+    'q5': {
+      label: 'Source',
+      values: { 'ed': 'Emergency Department', 'icu': 'ICU / step-down' }
+    },
+    'q6': {
+      label: 'Day type',
+      values: { 'weekday': 'Weekday', 'weekend': 'Weekend / holiday' }
+    },
+    'edwdtime': {
+      label: 'Time',
+      values: { 'before4': 'Before 4 PM', 'after4': 'After 4 PM' }
+    },
+    'edwdlc': {
+      label: 'Long call status',
+      values: { 'yes-open': 'Long call — not capped', 'yes-capped': 'Long call — capped', 'no': 'Not long call team' }
+    },
+    'edwegmed': {
+      label: 'Team type',
+      values: { 'lc': 'Long call team', 'nc': 'Non-call team' }
+    },
+    'edwelctime': {
+      label: 'Time',
+      values: { 'before6': 'Before 6 PM — not capped', 'capped': 'Before 6 PM — capped', 'after6': 'After 6 PM' }
+    },
+    'edwenctime': {
+      label: 'Time',
+      values: { 'before12': 'Before noon', 'noon4': 'Noon – 4 PM', 'after4': 'After 4 PM' }
+    },
+    'edwegeri': {
+      label: 'Time',
+      values: { 'before12': 'Before noon', 'noon4': 'Noon – 4 PM', 'after4': 'After 4 PM' }
+    },
+    'edwegerilc': {
+      label: 'Long call status',
+      values: { 'not-capped': 'Long call — not capped', 'capped': 'Long call — capped' }
+    },
+    'edcards': {
+      label: 'Time',
+      values: { 'before4': 'Before 4 PM', 'after4': 'After 4 PM' }
+    },
+    'icuwd': {
+      label: 'Notified by 4 PM',
+      values: { 'yes': 'Yes', 'no': 'No' }
+    },
+    'icuwe': {
+      label: 'Day type',
+      values: { 'weekday': 'Weekday', 'weekend': 'Weekend / holiday' }
+    },
+    'icuwegmed': {
+      label: 'Team type',
+      values: { 'lc': 'Long call team', 'nc': 'Non-call team' }
+    },
+    'icuwenc': {
+      label: 'Notified by noon',
+      values: { 'yes': 'Yes', 'no': 'No' }
+    },
+    'icuwenoon': {
+      label: 'Notified by noon',
+      values: { 'yes': 'Yes', 'no': 'No' }
+    }
+  };
   let currentScreen = 'home';
 
   const tagHtml = {
@@ -384,12 +487,83 @@
     cards: '<div class="service-tag tag-cards">Cardiology</div>'
   };
 
+  // Stores the pending answer for the current screen — set in answer(), committed in show()
+  let pendingAnswer = null;
+
   function show(id, prog) {
+    // Commit the pending answer chip, tagged with current history depth
+    if (pendingAnswer && currentScreen !== 'home' && currentScreen !== 'result') {
+      const map = ANSWER_LABELS[pendingAnswer.q];
+      if (map) {
+        const label = map.values[pendingAnswer.val] || pendingAnswer.val;
+        const depth = state.history.length;
+        const idx = state.answers.findIndex(a => a.q === pendingAnswer.q);
+        if (idx >= 0) state.answers.splice(idx, 1);
+        state.answers.push({ q: pendingAnswer.q, step: map.label, label, depth });
+      }
+    }
+    pendingAnswer = null;
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
     currentScreen = id;
     window.scrollTo(0, 0);
     if (prog !== undefined) document.getElementById('progress').style.width = prog + '%';
+    if (id !== 'home' && id !== 'result') renderAnswerSummary(id);
+  }
+
+  function goBack() {
+    if (state.history.length === 0) { restart(); return; }
+    pendingAnswer = null;
+    state.history.pop();
+    const dest = state.history[state.history.length - 1] || 'home';
+    // Strip all chips committed at or after the current history depth
+    // (everything answered from the destination screen onwards)
+    state.answers = state.answers.filter(a => a.depth < state.history.length);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + dest).classList.add('active');
+    currentScreen = dest;
+    window.scrollTo(0, 0);
+    if (dest !== 'home') renderAnswerSummary(dest);
+  }
+
+  function renderAnswerSummary(screenId) {
+    const screen = document.getElementById('screen-' + screenId);
+    if (!screen) return;
+    let existing = screen.querySelector('.answer-summary');
+    if (state.answers.length === 0) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (!existing) {
+      existing = document.createElement('div');
+      existing.className = 'answer-summary';
+      const opts = screen.querySelector('.options');
+      if (opts) screen.insertBefore(existing, opts);
+      else screen.appendChild(existing);
+    }
+    const svcNames = { gmed: 'General Medicine', geri: 'Geriatrics', cards: 'Cardiology' };
+    let html = '<div class="answer-summary-label">Your answers so far</div>';
+    html += `<div class="answer-chip"><span class="answer-chip-step">Service</span><span class="answer-chip-val">${svcNames[state.service] || state.service}</span></div>`;
+    state.answers.forEach(a => {
+      html += `<div class="answer-chip"><span class="answer-chip-step">${a.step}</span><span class="answer-chip-val">${a.label}</span></div>`;
+    });
+    existing.innerHTML = html;
+  }
+
+  function resultGoBack() {
+    pendingAnswer = null;
+    // history top is already the screen that led to the result — no pop needed
+    const dest = state.history[state.history.length - 1] || 'home';
+    if (dest === 'home') { restart(); return; }
+    // Strip chips committed at or after the depth of the destination screen
+    // The destination was pushed when we were ON it, so its depth = history.length - 1 + 1
+    // i.e. chips committed after leaving dest have depth > state.history.length - 1
+    state.answers = state.answers.filter(a => a.depth < state.history.length);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + dest).classList.add('active');
+    currentScreen = dest;
+    window.scrollTo(0, 0);
+    renderAnswerSummary(dest);
   }
 
   function setTag(elId, svc) {
@@ -400,6 +574,7 @@
   function startService(svc) {
     state.service = svc;
     state.history = ['home'];
+    state.answers = [];
     setTag('q1-tag', svc);
     document.getElementById('q1-step').textContent = svc === 'cards'
       ? 'Step 1 of 2 — Eligibility'
@@ -436,6 +611,7 @@
   }
 
   function answer(q, val) {
+    pendingAnswer = { q, val };  // will be committed to chips when show() is called
     state.history.push(currentScreen);
     const svc = state.service;
 
@@ -548,11 +724,34 @@
 
   function goBack() {
     if (state.history.length === 0) { restart(); return; }
-    const prev = state.history.pop();
+
+    // currentScreen = the screen we are currently ON (being left)
+    // history.pop() = the screen we came FROM (going back to)
+    const leavingScreen = currentScreen;
+    const dest = state.history.pop();
+
+    // Remove the answer chip for the screen we are leaving
+    const screenToQMap = {
+      'q1':'q1', 'q2':'q2', 'q3':'q3', 'q4':'q4', 'q5':'q5', 'q6':'q6',
+      'ed-wd-time':'edwdtime', 'ed-wd-lc':'edwdlc',
+      'ed-we-gmed':'edwegmed', 'ed-we-lc-time':'edwelctime', 'ed-we-nc-time':'edwenctime',
+      'ed-we-geri':'edwegeri', 'ed-we-geri-lc':'edwegerilc',
+      'ed-cards':'edcards',
+      'icu-wd':'icuwd', 'icu-we-gmed':'icuwegmed',
+      'icu-we-nc':'icuwenc', 'icu-we-noon':'icuwenoon'
+    };
+    const qKey = screenToQMap[leavingScreen];
+    if (qKey) {
+      const idx = state.answers.findIndex(a => a.q === qKey);
+      if (idx >= 0) state.answers.splice(idx, 1);
+    }
+
+    // Navigate to destination
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + prev).classList.add('active');
-    currentScreen = prev;
+    document.getElementById('screen-' + dest).classList.add('active');
+    currentScreen = dest;
     window.scrollTo(0, 0);
+    if (dest !== 'home') renderAnswerSummary(dest);
   }
 
   function capNote(svc) {
@@ -606,6 +805,17 @@
   };
 
   function showResult(key) {
+    // Commit the pending answer chip before showing result
+    if (pendingAnswer) {
+      const map = ANSWER_LABELS[pendingAnswer.q];
+      if (map) {
+        const label = map.values[pendingAnswer.val] || pendingAnswer.val;
+        const idx = state.answers.findIndex(a => a.q === pendingAnswer.q);
+        if (idx >= 0) state.answers.splice(idx, 1);
+        state.answers.push({ q: pendingAnswer.q, step: map.label, label });
+      }
+      pendingAnswer = null;
+    }
     const r = R[key];
     const cap = capNote(state.service);
     const rulesHtml = r.rules.map(rule => {
@@ -613,7 +823,18 @@
       if (!text) return '';
       return `<div class="result-rule ${r.color}">${text}</div>`;
     }).join('');
-    document.getElementById('result-content').innerHTML = `
+
+    // Build answer chip summary for top of result
+    const svcNames = { gmed: 'General Medicine', geri: 'Geriatrics', cards: 'Cardiology' };
+    let chipsHtml = `<div class="answer-summary" style="margin-bottom:20px;">
+      <div class="answer-summary-label">Your answers</div>
+      <div class="answer-chip"><span class="answer-chip-step">Service</span><span class="answer-chip-val">${svcNames[state.service] || state.service}</span></div>`;
+    state.answers.forEach(a => {
+      chipsHtml += `<div class="answer-chip"><span class="answer-chip-step">${a.step}</span><span class="answer-chip-val">${a.label}</span></div>`;
+    });
+    chipsHtml += '</div>';
+
+    document.getElementById('result-content').innerHTML = chipsHtml + `
       <div class="result-card">
         <div class="result-header">
           <div class="result-icon ${r.color}">${r.icon}</div>
@@ -632,7 +853,9 @@
   }
 
   function restart() {
-    state.service = null; state.history = []; state.source = null; state.daytype = null;
+    state.service = null; state.history = []; state.source = null;
+    state.daytype = null; state.answers = [];
+    pendingAnswer = null;
     show('home', 0);
   }
 </script>
