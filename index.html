@@ -143,7 +143,7 @@
       <div class="service-btn" onclick="startService('geri')"><span class="svc-abbr">GR</span>Geriatrics</div>
       <div class="service-btn" onclick="startService('cards')"><span class="svc-abbr">CA</span>Cardiology</div>
     </div>
-    <p class="footnote">Last updated June 2026</p>
+    <p class="footnote">Last updated July 2026</p>
   </div>
 
   <!-- Q1: 14 days -->
@@ -177,10 +177,10 @@
     <p class="step-label">Step 3 of 4 — Eligibility</p>
     <div id="q3-tag"></div>
     <p class="question" id="q3-text"></p>
-    <p class="question-note">If yes, the patient cannot bounce back regardless of any other circumstances. This rule is absolute.</p>
+    <p class="question-note">This means the last day they're actually present caring for patients — not the rotation's official end date. Example: the rotation ends Wednesday, but the intern is off that day — Tuesday is their last day, so a patient would not be a bounceback if presenting Tuesday.</p>
     <div class="options">
-      <button class="opt-btn" onclick="answer('q3','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — last day of service</div></button>
-      <button class="opt-btn" onclick="answer('q3','no')"><div class="opt-icon">N</div><div class="opt-label">No — not last day</div></button>
+      <button class="opt-btn" onclick="answer('q3','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — last day of direct patient care</div></button>
+      <button class="opt-btn" onclick="answer('q3','no')"><div class="opt-icon">N</div><div class="opt-label">No — not their last day of direct patient care</div></button>
     </div>
     <button class="back-btn" onclick="goBack()">← back</button>
   </div>
@@ -407,7 +407,7 @@
       values: { 'yes': 'Cardiac / prior issue', 'no': 'Unrelated — not a bounceback' }
     },
     'q3': {
-      label: 'Last day of service',
+      label: 'Last day of patient care',
       values: { 'yes': 'Yes — cannot bounce', 'no': 'No' }
     },
     'q4': {
@@ -512,21 +512,6 @@
     if (id !== 'home' && id !== 'result') renderAnswerSummary(id);
   }
 
-  function goBack() {
-    if (state.history.length === 0) { restart(); return; }
-    pendingAnswer = null;
-    state.history.pop();
-    const dest = state.history[state.history.length - 1] || 'home';
-    // Strip all chips committed at or after the current history depth
-    // (everything answered from the destination screen onwards)
-    state.answers = state.answers.filter(a => a.depth < state.history.length);
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + dest).classList.add('active');
-    currentScreen = dest;
-    window.scrollTo(0, 0);
-    if (dest !== 'home') renderAnswerSummary(dest);
-  }
-
   function renderAnswerSummary(screenId) {
     const screen = document.getElementById('screen-' + screenId);
     if (!screen) return;
@@ -553,12 +538,8 @@
 
   function resultGoBack() {
     pendingAnswer = null;
-    // history top is already the screen that led to the result — no pop needed
     const dest = state.history[state.history.length - 1] || 'home';
     if (dest === 'home') { restart(); return; }
-    // Strip chips committed at or after the depth of the destination screen
-    // The destination was pushed when we were ON it, so its depth = history.length - 1 + 1
-    // i.e. chips committed after leaving dest have depth > state.history.length - 1
     state.answers = state.answers.filter(a => a.depth < state.history.length);
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + dest).classList.add('active');
@@ -588,8 +569,8 @@
   function setupQ3(svc) {
     setTag('q3-tag', svc);
     document.getElementById('q3-text').textContent = svc === 'geri'
-      ? "Is today the original Geri resident's last day of service?"
-      : "Is today the original intern's last day of service?";
+      ? "Is today the original Geri resident's last day of direct patient care?"
+      : "Is today the original intern's last day of direct patient care?";
   }
 
   function setupQ4(svc) {
@@ -764,9 +745,9 @@
 
   const R = {
     'not-bb': { color:'red', icon:'✕', verdict:'Not a bounceback', title:'This patient does not qualify as a bounceback.', detail:'Either the team has not previously cared for this patient within 14 days, or the chief concern does not meet eligibility criteria for this service.', rules:['Admit as a standard new admission.'] },
-    'last-day': { color:'red', icon:'✕', verdict:'Cannot bounce — last day', title:'Patient cannot bounce on the last day of service.', detail:'This rule is absolute regardless of any other circumstances.', rules:['Treat as a standard new admission.','Assign per normal call rules.'] },
+    'last-day': { color:'red', icon:'✕', verdict:'Cannot bounce — last day of patient care', title:'Patient cannot bounce on the original intern\'s (or Geri resident\'s) last day of direct patient care.', detail:'This is the last day they are actually present caring for patients on the rotation — not the last calendar day of the block. Example: the rotation ends Wednesday, but the intern is off that day — Tuesday is their last day, so a patient would not be a bounceback if presenting Tuesday.', rules:['Treat as a standard new admission.','Assign per normal call rules.'] },
     'geri-no-resident': { color:'red', icon:'✕', verdict:'Cannot bounce today', title:'Geri bounceback requires the original resident to be present.', detail:'The original Geri resident is not present today.', rules:['Hold for the next eligible day when the original resident is present.','See the full VA Geri tab for further details.'] },
-    'hold-intern': { color:'amber', icon:'⏸', verdict:'Hold — await intern return', title:'Hold until the original intern returns.', detail:'The intern is off and the current resident did not previously care for this patient.', rules:['Re-evaluate eligibility at time of actual assignment — not now.','If the intern\'s next day back is also their last day of service, treat as a new admission.','Last-day-of-service restriction is absolute at re-evaluation.'] },
+    'hold-intern': { color:'amber', icon:'⏸', verdict:'Hold — await intern return', title:'Hold until the original intern returns.', detail:'The intern is off and the current resident did not previously care for this patient.', rules:['Re-evaluate eligibility at time of actual assignment — not now.','If the intern\'s next day back is also their last day of direct patient care, treat as a new admission.'] },
 
     // ED WEEKDAY
     'ed-wd-before4': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Accepting team admits directly.', detail:'Weekday ED bounceback before 4 PM.', rules:['Accepting team writes the H&P.','Does NOT count toward daily admit cap unless full H&P is written.','DOES count toward census cap.','__CAP__'] },
