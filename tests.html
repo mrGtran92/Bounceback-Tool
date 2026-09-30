@@ -131,7 +131,7 @@
 
   <div class="page-header">
     <div class="page-title">Bounceback Checker · Test Dashboard</div>
-    <div class="page-sub">Automated regression tests — run after every change to bounceback_checker.html. All tests should pass before uploading a new version.</div>
+    <div class="page-sub">Automated regression tests — run after every change to index.html. All tests should pass before uploading a new version.</div>
   </div>
 
   <div class="summary-bar">
@@ -157,9 +157,10 @@
   <div id="test-sections"></div>
 
   <div class="how-to">
-    <strong>How to use:</strong> Upload both <code>bounceback_checker.html</code> and <code>tests.html</code> to the same GitHub repo. After any change to <code>bounceback_checker.html</code>, wait ~60 seconds for Pages to rebuild, then reload this page. All tests should show <strong>PASS</strong>. Any <strong>FAIL</strong> means a change broke a pathway — investigate before sharing the updated tool.<br><br>
-    <strong>To add a scenario:</strong> Edit the <code>SCENARIOS</code> array in the script below. Each scenario needs: <code>name</code>, <code>group</code>, <code>service</code>, <code>answers</code> (the sequence of question/answer pairs that drive the tool), and <code>expected</code> (the result key string).<br><br>
-    <strong>This page only works when served from GitHub Pages</strong> — it fetches <code>bounceback_checker.html</code> via a network request, which browsers block for local files. Do not open by double-clicking from your desktop.
+    <strong>How to use:</strong> Keep <code>index.html</code> and <code>tests.html</code> in the same GitHub repo. After any change to <code>index.html</code>, wait ~60 seconds for Pages to rebuild, then reload this page. All tests should show <strong>PASS</strong>. Any <strong>FAIL</strong> means a change broke a pathway — investigate before sharing the updated tool.<br><br>
+    <strong>Two kinds of tests:</strong> the scenarios check specific paths from the decision table; the <strong>Rules</strong> sections walk every possible path through the tool and check rules that must always hold (for example, the NAR never admits before 4 PM). A failing rule shows the first path that breaks it.<br><br>
+    <strong>To add a scenario:</strong> Edit the <code>SCENARIOS</code> array in the script below. Each scenario needs a <code>name</code>, <code>group</code>, <code>service</code>, <code>answers</code> (the question/answer pairs, in the order the tool asks them), and <code>expected</code> (the result key). Add <code>anchor: 'today'</code> or <code>anchor: 'handoff'</code> to also check which day the last-day and working questions ask about.<br><br>
+    <strong>This page only works when served from GitHub Pages</strong> — it fetches <code>index.html</code> over the network, which browsers block for local files. Do not open it by double-clicking from your desktop.
   </div>
 
 </div>
@@ -167,402 +168,352 @@
 <script>
 // ─────────────────────────────────────────────────────────────────
 // TEST SCENARIOS
-// Each scenario drives the tool through a sequence of answer() calls
-// and checks that the final result key matches `expected`.
+// Each scenario replays a path of [question, answer] pairs through the
+// tool's routing logic (the <script id="bb-logic"> block in index.html)
+// and checks the result key — and, optionally, the day anchor.
 //
-// answers: array of [question_key, answer_value] pairs
-// These map directly to the answer() function in bounceback_checker.html
-//
-// service: 'gmed' | 'geri' | 'cards'
-// expected: the result key string (e.g. 'ed-wd-before4')
+// Question order: q1 (14 days) → [q2 Cards chief concern] → src →
+//   ED:  frame → [team] → cap → last → work
+//   ICU: icu-sched → icu-wd | icu-we-team → icu-we-nc | icu-we-noon → cap → last → work
+// Anchor: 'today'   = the original team takes the patient now
+//         'handoff' = held over to the next 7 AM handoff
 // ─────────────────────────────────────────────────────────────────
+const OK = [['cap','yes'],['last','no'],['work','yes']];   // eligible, intern/resident working
+const ED  = [['q1','yes'],['src','ed']];
+const ICU = [['q1','yes'],['src','icu']];
 
 const SCENARIOS = [
+  // ── GMED · ED ROUTING (decision table) ─────────────────────────
+  { group: 'GMed · ED routing', name: 'Weekday 7 AM – 4 PM · any team → original team admits', service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ...OK], expected: 'orig-admits', anchor: 'today' },
+  { group: 'GMed · ED routing', name: 'Weekend 7 AM – noon · any team → original team admits', service: 'gmed',
+    answers: [...ED, ['frame','we-am'], ...OK], expected: 'orig-admits', anchor: 'today' },
+  { group: 'GMed · ED routing', name: 'Weekend noon – 4 PM · long call → long call admits', service: 'gmed',
+    answers: [...ED, ['frame','we-pm'], ['team','lc'], ...OK], expected: 'lc-own', anchor: 'today' },
+  { group: 'GMed · ED routing', name: 'Weekend noon – 4 PM · non-call team → long call holds over', service: 'gmed',
+    answers: [...ED, ['frame','we-pm'], ['team','other'], ...OK], expected: 'lc-hold', anchor: 'handoff' },
+  { group: 'GMed · ED routing', name: '4 – 6 PM · long call → long call admits', service: 'gmed',
+    answers: [...ED, ['frame','eve'], ['team','lc'], ...OK], expected: 'lc-own', anchor: 'today' },
+  { group: 'GMed · ED routing', name: '4 – 6 PM · another team → NAR holds over', service: 'gmed',
+    answers: [...ED, ['frame','eve'], ['team','other'], ...OK], expected: 'nar-hold', anchor: 'handoff' },
+  { group: 'GMed · ED routing', name: "6 PM – 7 AM · long call → NAR places on long call's list", service: 'gmed',
+    answers: [...ED, ['frame','night'], ['team','lc'], ...OK], expected: 'nar-lc-list', anchor: 'handoff' },
+  { group: 'GMed · ED routing', name: '6 PM – 7 AM · another team → NAR holds over', service: 'gmed',
+    answers: [...ED, ['frame','night'], ['team','other'], ...OK], expected: 'nar-hold', anchor: 'handoff' },
 
-  // ── ELIGIBILITY STOPS ──────────────────────────────────────────
+  // ── GMED · ED ELIGIBILITY ──────────────────────────────────────
+  { group: 'GMed · ED eligibility', name: 'Not cared for within 14 days', service: 'gmed',
+    answers: [['q1','no']], expected: 'not-bb' },
+  { group: 'GMed · ED eligibility', name: 'Original team at census cap', service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ['cap','no']], expected: 'at-cap' },
+  { group: 'GMed · ED eligibility', name: "Today is the intern's last day", service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','yes']], expected: 'last-day', anchor: 'today' },
+  { group: 'GMed · ED eligibility', name: 'Intern has already rotated off', service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','rotated']], expected: 'rotated-off' },
+  { group: 'GMed · ED eligibility', name: 'Intern off · team resident knew patient → proceeds', service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','no'], ['work','res-known']], expected: 'orig-admits' },
+  { group: 'GMed · ED eligibility', name: 'Intern off · team resident new → on-call team', service: 'gmed',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','no'], ['work','res-new']], expected: 'off-ed' },
+  { group: 'GMed · ED eligibility', name: 'NAR Tuesday 10 PM · intern\'s last day is Wednesday (7 AM handoff) → not a bounceback', service: 'gmed',
+    answers: [...ED, ['frame','night'], ['team','other'], ['cap','yes'], ['last','yes']], expected: 'last-day', anchor: 'handoff' },
+  { group: 'GMed · ED eligibility', name: 'NAR overnight · intern off at 7 AM handoff, resident new → on-call team', service: 'gmed',
+    answers: [...ED, ['frame','night'], ['team','other'], ['cap','yes'], ['last','no'], ['work','res-new']], expected: 'off-ed', anchor: 'handoff' },
+  { group: 'GMed · ED eligibility', name: 'Weekend noon – 4 PM holdover · intern off next morning → on-call team', service: 'gmed',
+    answers: [...ED, ['frame','we-pm'], ['team','other'], ['cap','yes'], ['last','no'], ['work','res-new']], expected: 'off-ed', anchor: 'handoff' },
+  { group: 'GMed · ED eligibility', name: 'Long call at census cap overnight → not a bounceback', service: 'gmed',
+    answers: [...ED, ['frame','night'], ['team','lc'], ['cap','no']], expected: 'at-cap' },
 
-  {
-    group: 'Eligibility',
-    name: 'GMed — not seen within 14 days',
-    service: 'gmed',
-    answers: [['q1','no']],
-    expected: 'not-bb'
-  },
-  {
-    group: 'Eligibility',
-    name: 'GMed — last day of intern',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','yes']],
-    expected: 'last-day'
-  },
-  {
-    group: 'Eligibility',
-    name: 'GMed — intern off, resident new to patient',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','res-new']],
-    expected: 'hold-intern'
-  },
-  {
-    group: 'Eligibility',
-    name: 'Geri — not seen within 14 days',
-    service: 'geri',
-    answers: [['q1','no']],
-    expected: 'not-bb'
-  },
-  {
-    group: 'Eligibility',
-    name: 'Geri — last day of resident',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','yes']],
-    expected: 'last-day'
-  },
-  {
-    group: 'Eligibility',
-    name: 'Geri — original resident off today',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','no-geri']],
-    expected: 'geri-no-resident'
-  },
-  {
-    group: 'Eligibility',
-    name: 'Cardiology — not seen within 14 days',
-    service: 'cards',
-    answers: [['q1','no']],
-    expected: 'not-bb'
-  },
-  {
-    group: 'Eligibility',
-    name: 'Cardiology — chief concern unrelated',
-    service: 'cards',
-    answers: [['q1','yes'],['q2','no']],
-    expected: 'not-bb'
-  },
+  // ── GERI · ED ──────────────────────────────────────────────────
+  { group: 'Geri · ED', name: 'Weekday 7 AM – 4 PM → Geri team admits', service: 'geri',
+    answers: [...ED, ['frame','wd-day'], ...OK], expected: 'orig-admits-geri', anchor: 'today' },
+  { group: 'Geri · ED', name: 'Weekend 7 AM – noon → Geri team admits', service: 'geri',
+    answers: [...ED, ['frame','we-am'], ...OK], expected: 'orig-admits-geri', anchor: 'today' },
+  { group: 'Geri · ED', name: 'Weekend noon – 4 PM → GMed long call holds over', service: 'geri',
+    answers: [...ED, ['frame','we-pm'], ...OK], expected: 'lc-hold-geri', anchor: 'handoff' },
+  { group: 'Geri · ED', name: 'Any day 4 PM – 7 AM → NAR holds over', service: 'geri',
+    answers: [...ED, ['frame','after4'], ...OK], expected: 'nar-hold-geri', anchor: 'handoff' },
+  { group: 'Geri · ED', name: 'Not cared for within 14 days', service: 'geri',
+    answers: [['q1','no']], expected: 'not-bb' },
+  { group: 'Geri · ED', name: 'At census cap (16 / 6)', service: 'geri',
+    answers: [...ED, ['frame','wd-day'], ['cap','no']], expected: 'at-cap' },
+  { group: 'Geri · ED', name: "Resident's last day at the 7 AM handoff", service: 'geri',
+    answers: [...ED, ['frame','after4'], ['cap','yes'], ['last','yes']], expected: 'last-day', anchor: 'handoff' },
+  { group: 'Geri · ED', name: 'Resident has rotated off', service: 'geri',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','rotated']], expected: 'rotated-off' },
+  { group: 'Geri · ED', name: 'Resident off → on-call team', service: 'geri',
+    answers: [...ED, ['frame','wd-day'], ['cap','yes'], ['last','no'], ['work','no']], expected: 'off-ed' },
 
-  // ── GMED ED WEEKDAY ────────────────────────────────────────────
+  // ── GMED · ICU ─────────────────────────────────────────────────
+  { group: 'GMed · ICU', name: 'Weekday · notified by 4 PM', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ...OK], expected: 'icu-wd-yes', anchor: 'today' },
+  { group: 'GMed · ICU', name: 'Weekday · missed 4 PM', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','no']], expected: 'icu-wd-no' },
+  { group: 'GMed · ICU', name: 'Weekend · long call', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','lc'], ...OK], expected: 'icu-we-lc' },
+  { group: 'GMed · ICU', name: 'Weekend · non-call notified by noon', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','nc'], ['icu-we-nc','yes'], ...OK], expected: 'icu-we-nc-yes' },
+  { group: 'GMed · ICU', name: 'Weekend · non-call missed noon', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','nc'], ['icu-we-nc','no']], expected: 'icu-we-nc-no' },
+  { group: 'GMed · ICU', name: 'At census cap → ICU keeps patient', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','no']], expected: 'icu-at-cap' },
+  { group: 'GMed · ICU', name: "Intern's last day → transfer as new admission", service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','yes'], ['last','yes']], expected: 'last-day', anchor: 'today' },
+  { group: 'GMed · ICU', name: 'Intern rotated off → transfer as new admission', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','yes'], ['last','rotated']], expected: 'rotated-off' },
+  { group: 'GMed · ICU', name: 'Intern off · resident knew patient → proceeds', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','yes'], ['last','no'], ['work','res-known']], expected: 'icu-wd-yes' },
+  { group: 'GMed · ICU', name: 'Intern off · resident new → ICU keeps until intern is back', service: 'gmed',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','yes'], ['last','no'], ['work','res-new']], expected: 'icu-hold' },
 
-  {
-    group: 'GMed — ED Weekday',
-    name: 'Intern present · before 4 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','before4']],
-    expected: 'ed-wd-before4'
-  },
-  {
-    group: 'GMed — ED Weekday',
-    name: 'After 4 PM · long call open',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','after4'],['edwdlc','yes-open']],
-    expected: 'ed-wd-lc-open'
-  },
-  {
-    group: 'GMed — ED Weekday',
-    name: 'After 4 PM · long call capped',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','after4'],['edwdlc','yes-capped']],
-    expected: 'ed-wd-nar'
-  },
-  {
-    group: 'GMed — ED Weekday',
-    name: 'After 4 PM · not long call team',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','after4'],['edwdlc','no']],
-    expected: 'ed-wd-nar'
-  },
+  // ── GERI · ICU ─────────────────────────────────────────────────
+  { group: 'Geri · ICU', name: 'Weekday · notified by 4 PM', service: 'geri',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ...OK], expected: 'icu-wd-yes' },
+  { group: 'Geri · ICU', name: 'Weekday · missed 4 PM', service: 'geri',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','no']], expected: 'icu-wd-no' },
+  { group: 'Geri · ICU', name: 'Weekend · notified by noon', service: 'geri',
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-noon','yes'], ...OK], expected: 'icu-we-noon-yes' },
+  { group: 'Geri · ICU', name: 'Weekend · missed noon', service: 'geri',
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-noon','no']], expected: 'icu-we-noon-no' },
+  { group: 'Geri · ICU', name: 'Resident off → ICU keeps until resident is back', service: 'geri',
+    answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','yes'], ['cap','yes'], ['last','no'], ['work','no']], expected: 'icu-hold' },
 
-  // ── GMED ED WEEKEND ───────────────────────────────────────────
-
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Long call · before 6 PM · not capped',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','lc'],['edwelctime','before6']],
-    expected: 'ed-we-lc-before6'
-  },
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Long call · capped before 6 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','lc'],['edwelctime','capped']],
-    expected: 'ed-we-nar'
-  },
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Long call · after 6 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','lc'],['edwelctime','after6']],
-    expected: 'ed-we-nar'
-  },
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Non-call · before noon',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','nc'],['edwenctime','before12']],
-    expected: 'ed-we-nc-before12'
-  },
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Non-call · noon to 4 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','nc'],['edwenctime','noon4']],
-    expected: 'ed-we-nc-noon4'
-  },
-  {
-    group: 'GMed — ED Weekend',
-    name: 'Non-call · after 4 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegmed','nc'],['edwenctime','after4']],
-    expected: 'ed-we-nar'
-  },
-
-  // ── GERI ED ───────────────────────────────────────────────────
-
-  {
-    group: 'Geri — ED',
-    name: 'Weekday · before 4 PM',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','before4']],
-    expected: 'ed-wd-before4-geri'
-  },
-  {
-    group: 'Geri — ED',
-    name: 'Weekday · after 4 PM',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekday'],['edwdtime','after4']],
-    expected: 'ed-wd-after4-nar'
-  },
-  {
-    group: 'Geri — ED',
-    name: 'Weekend · before noon',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegeri','before12']],
-    expected: 'ed-we-geri-before12'
-  },
-  {
-    group: 'Geri — ED',
-    name: 'Weekend · noon–4 PM · long call not capped',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegeri','noon4'],['edwegerilc','not-capped']],
-    expected: 'ed-we-geri-lc-open'
-  },
-  {
-    group: 'Geri — ED',
-    name: 'Weekend · noon–4 PM · long call capped',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegeri','noon4'],['edwegerilc','capped']],
-    expected: 'ed-we-geri-lc-capped'
-  },
-  {
-    group: 'Geri — ED',
-    name: 'Weekend · after 4 PM',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','ed'],['q6','weekend'],['edwegeri','after4']],
-    expected: 'ed-we-geri-after4'
-  },
-
-  // ── CARDIOLOGY ED ─────────────────────────────────────────────
-
-  {
-    group: 'Cardiology — ED',
-    name: 'Before 4 PM',
-    service: 'cards',
-    answers: [['q1','yes'],['q2','yes'],['q5','ed'],['edcards','before4']],
-    expected: 'ed-cards-before4'
-  },
-  {
-    group: 'Cardiology — ED',
-    name: 'After 4 PM',
-    service: 'cards',
-    answers: [['q1','yes'],['q2','yes'],['q5','ed'],['edcards','after4']],
-    expected: 'ed-cards-after4'
-  },
-
-  // ── ICU WEEKDAY ───────────────────────────────────────────────
-
-  {
-    group: 'ICU — Weekday',
-    name: 'GMed · notified by 4 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekday'],['icuwd','yes']],
-    expected: 'icu-wd-yes'
-  },
-  {
-    group: 'ICU — Weekday',
-    name: 'GMed · not notified by 4 PM',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekday'],['icuwd','no']],
-    expected: 'icu-wd-no'
-  },
-
-  // ── ICU WEEKEND GMED ──────────────────────────────────────────
-
-  {
-    group: 'ICU — Weekend GMed',
-    name: 'Long call team',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekend'],['icuwegmed','lc']],
-    expected: 'icu-we-lc'
-  },
-  {
-    group: 'ICU — Weekend GMed',
-    name: 'Non-call · notified by noon',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekend'],['icuwegmed','nc'],['icuwenc','yes']],
-    expected: 'icu-we-nc-yes'
-  },
-  {
-    group: 'ICU — Weekend GMed',
-    name: 'Non-call · missed noon cutoff',
-    service: 'gmed',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekend'],['icuwegmed','nc'],['icuwenc','no']],
-    expected: 'icu-we-nc-no'
-  },
-
-  // ── ICU WEEKEND GERI/CARDS ────────────────────────────────────
-
-  {
-    group: 'ICU — Weekend Geri/Cards',
-    name: 'Geri · notified by noon',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekend'],['icuwenoon','yes']],
-    expected: 'icu-we-noon-yes'
-  },
-  {
-    group: 'ICU — Weekend Geri/Cards',
-    name: 'Geri · missed noon cutoff',
-    service: 'geri',
-    answers: [['q1','yes'],['q3','no'],['q4','yes'],['q5','icu'],['q6','weekend'],['icuwenoon','no']],
-    expected: 'icu-we-noon-no'
-  },
-  {
-    group: 'ICU — Weekend Geri/Cards',
-    name: 'Cards · notified by noon',
-    service: 'cards',
-    answers: [['q1','yes'],['q2','yes'],['q5','icu'],['q6','weekend'],['icuwenoon','yes']],
-    expected: 'icu-we-noon-yes'
-  },
-  {
-    group: 'ICU — Weekend Geri/Cards',
-    name: 'Cards · missed noon cutoff',
-    service: 'cards',
-    answers: [['q1','yes'],['q2','yes'],['q5','icu'],['q6','weekend'],['icuwenoon','no']],
-    expected: 'icu-we-noon-no'
-  },
-
+  // ── CARDIOLOGY ─────────────────────────────────────────────────
+  { group: 'Cardiology', name: 'Not cared for within 14 days', service: 'cards',
+    answers: [['q1','no']], expected: 'not-bb' },
+  { group: 'Cardiology', name: 'Chief concern unrelated', service: 'cards',
+    answers: [['q1','yes'], ['q2','no']], expected: 'not-bb' },
+  { group: 'Cardiology', name: 'ED · 7 AM – 4 PM', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','ed'], ['cards-time','day']], expected: 'ed-cards-before4' },
+  { group: 'Cardiology', name: 'ED · 4 PM – 7 AM', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','ed'], ['cards-time','night']], expected: 'ed-cards-after4' },
+  { group: 'Cardiology', name: 'ICU weekday · notified by 4 PM', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','icu'], ['icu-sched','weekday'], ['icu-wd','yes']], expected: 'icu-wd-yes' },
+  { group: 'Cardiology', name: 'ICU weekday · missed 4 PM', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','icu'], ['icu-sched','weekday'], ['icu-wd','no']], expected: 'icu-wd-no' },
+  { group: 'Cardiology', name: 'ICU weekend · notified by noon', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','icu'], ['icu-sched','weekend'], ['icu-we-noon','yes']], expected: 'icu-we-noon-yes' },
+  { group: 'Cardiology', name: 'ICU weekend · missed noon', service: 'cards',
+    answers: [['q1','yes'], ['q2','yes'], ['src','icu'], ['icu-sched','weekend'], ['icu-we-noon','no']], expected: 'icu-we-noon-no' },
 ];
 
 // ─────────────────────────────────────────────────────────────────
 // TEST ENGINE
-// Extracts the answer() and showResult() functions from the tool,
-// runs each scenario through them, and reports pass/fail.
+// Loads index.html, pulls out the routing logic block, and replays
+// each scenario through BB.run().
 // ─────────────────────────────────────────────────────────────────
+function loadLogic(html) {
+  const m = html.match(/<script id="bb-logic">([\s\S]*?)<\/script>/);
+  if (!m) throw new Error('Could not find <script id="bb-logic"> in index.html');
+  return new Function(m[1] + '\nreturn BB;')();
+}
+
+function runScenario(BB, s) {
+  try {
+    const { st, step } = BB.run(s.service, s.answers);
+    const got = step.result || ('(stopped at screen: ' + step.screen + ')');
+    let passed = got === s.expected;
+    let gotText = got;
+    if (s.anchor) {
+      gotText += ' · anchor ' + st.anchor;
+      if (st.anchor !== s.anchor) passed = false;
+    }
+    return { scenario: s, passed, got: gotText };
+  } catch (e) {
+    return { scenario: s, passed: false, got: 'EXCEPTION: ' + e.message };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ALWAYS-TRUE RULES
+// These walk every possible path through the tool (every combination of
+// answers, for every service) and check rules that must hold on all of
+// them. They catch paths the hand-written scenarios above don't cover —
+// for example after a cutoff time, a question, or a card is changed.
+// ─────────────────────────────────────────────────────────────────
+const MAX_QUESTIONS = 8;
+
+function loadScreens(html, BB) {
+  const m = html.match(/<script>\n([\s\S]*?)<\/script>\s*<\/body>/);
+  if (!m) throw new Error('Could not find the screen text script in index.html');
+  return new Function('BB', m[1] + '\nreturn { question, RESULTS, capNote, BANNER, CHIP };')(BB);
+}
+
+// Every path, with the text the user saw on each screen along the way
+function allPaths(BB, UI) {
+  const out = [], deadEnds = [];
+  const walk = (svc, path, seen) => {
+    let st, step;
+    try { ({ st, step } = BB.run(svc, path)); }
+    catch (e) { deadEnds.push(svc + ': ' + path.map(p => p.join('=')).join(', ') + ' → ' + e.message); return; }
+    if (step.result) { out.push({ svc, path, seen, st, key: step.result }); return; }
+    const qd = UI.question(step.screen, st);
+    if (!qd || !qd.options || !qd.options.length) { deadEnds.push(svc + ': no options on screen ' + step.screen); return; }
+    const txt = [qd.text, qd.note, ...qd.options.map(o => o.label + ' ' + (o.sub || ''))].join(' | ');
+    for (const o of qd.options) walk(svc, [...path, [step.screen, o.v]], [...seen, txt]);
+  };
+  ['gmed', 'geri', 'cards'].forEach(s => walk(s, [], []));
+  return { paths: out, deadEnds };
+}
+
+const val = (x, st) => (typeof x === 'function' ? x(st) : x);
+const answer = (p, q) => (p.path.find(([k]) => k === q) || [])[1];
+const cardText = (UI, p) => {
+  const r = UI.RESULTS[p.key];
+  if (!r) return '';
+  return [val(r.title, p.st), val(r.detail, p.st), ...r.rules.map(x => x === '__CAP__' ? UI.capNote(p.svc) : val(x, p.st))].join(' ');
+};
+const askedHandoff = p => /at the 7 AM handoff/i.test(p.seen.join(' '));
+const SAME_DAY = ['orig-admits', 'orig-admits-geri', 'lc-own'];
+
+// Each rule returns a failure message for a path, or nothing if the path is fine
+const PATH_RULES = [
+  // ── Eligibility
+  { group: 'Rules · Eligibility', name: '"Yes — this is a bounceback" only after every eligibility check passes',
+    check: (p, UI) => {
+      if (UI.RESULTS[p.key].status !== 'yes') return;
+      if (answer(p, 'q1') !== 'yes') return 'Yes without the 14-day check';
+      if (p.svc === 'cards') return answer(p, 'q2') !== 'yes' ? 'Cardiology Yes without a qualifying chief concern' : undefined;
+      if (answer(p, 'cap') !== 'yes') return 'Yes without the census cap check';
+      if (answer(p, 'last') !== 'no') return 'Yes on the last day or after rotating off';
+      if (!['yes', 'res-known'].includes(answer(p, 'work'))) return 'Yes with the intern/resident off';
+    } },
+  { group: 'Rules · Eligibility', name: '"No" to the 14-day question always ends at Not a bounceback',
+    check: p => answer(p, 'q1') === 'no' && p.key !== 'not-bb' ? 'ended at ' + p.key : undefined },
+  { group: 'Rules · Eligibility', name: 'At census cap → Not a bounceback (ED) or ICU keeps the patient (ICU)',
+    check: p => {
+      if (answer(p, 'cap') !== 'no') return;
+      const want = answer(p, 'src') === 'icu' ? 'icu-at-cap' : 'at-cap';
+      return p.key !== want ? 'ended at ' + p.key : undefined;
+    } },
+  { group: 'Rules · Eligibility', name: 'Last day and rotated off always end at their own cards',
+    check: p => {
+      if (answer(p, 'last') === 'yes' && p.key !== 'last-day') return 'last day ended at ' + p.key;
+      if (answer(p, 'last') === 'rotated' && p.key !== 'rotated-off') return 'rotated off ended at ' + p.key;
+    } },
+  { group: 'Rules · Eligibility', name: 'Intern/resident off → on-call team (ED) or ICU keeps until they are back (ICU)',
+    check: p => {
+      if (!['res-new', 'no'].includes(answer(p, 'work'))) return;
+      const want = answer(p, 'src') === 'icu' ? 'icu-hold' : 'off-ed';
+      return p.key !== want ? 'ended at ' + p.key : undefined;
+    } },
+
+  // ── Day anchor
+  { group: 'Rules · Day anchor', name: 'Cards that say "7 AM handoff" follow questions that asked about the 7 AM handoff',
+    check: (p, UI) => p.svc !== 'cards' && answer(p, 'last') && /7 AM handoff/.test(cardText(UI, p)) && !askedHandoff(p)
+      ? 'questions asked about today' : undefined },
+  { group: 'Rules · Day anchor', name: 'Same-day admissions follow questions that asked about "today"',
+    check: p => SAME_DAY.includes(p.key) && askedHandoff(p) ? 'questions asked about the 7 AM handoff' : undefined },
+  { group: 'Rules · Day anchor', name: 'ICU transfers always ask about today',
+    check: p => answer(p, 'src') === 'icu' && answer(p, 'last') && askedHandoff(p) ? 'asked about the 7 AM handoff' : undefined },
+
+  // ── Timing
+  { group: 'Rules · Timing', name: 'The NAR never admits before 4 PM',
+    check: p => /^nar-/.test(p.key) && !['eve', 'night', 'after4'].includes(answer(p, 'frame')) ? 'time frame ' + answer(p, 'frame') : undefined },
+  { group: 'Rules · Timing', name: "The NAR only places a patient on long call's list after 6 PM",
+    check: p => p.key === 'nar-lc-list' && answer(p, 'frame') !== 'night' ? 'time frame ' + answer(p, 'frame') : undefined },
+  { group: 'Rules · Timing', name: 'Long call admits its own noon – 6 PM, and holds over only on weekends/holidays noon – 4 PM',
+    check: p => {
+      if (p.key === 'lc-own' && !['we-pm', 'eve'].includes(answer(p, 'frame'))) return 'long call own at ' + answer(p, 'frame');
+      if (/^lc-hold/.test(p.key) && answer(p, 'frame') !== 'we-pm') return 'holdover at ' + answer(p, 'frame');
+    } },
+  { group: 'Rules · Timing', name: '4 – 6 PM: a bounceback for any team other than long call goes to the NAR',
+    check: (p, UI) => answer(p, 'frame') === 'eve' && answer(p, 'team') === 'other' && UI.RESULTS[p.key].status === 'yes' && p.key !== 'nar-hold'
+      ? 'ended at ' + p.key : undefined },
+  { group: 'Rules · Timing', name: 'The original team only admits weekdays 7 AM – 4 PM or weekends/holidays 7 AM – noon',
+    check: p => /^orig-admits/.test(p.key) && !['wd-day', 'we-am'].includes(answer(p, 'frame')) ? 'time frame ' + answer(p, 'frame') : undefined },
+
+  // ── Wording
+  { group: 'Rules · Wording', name: 'Geri screens never say "intern"; GMed screens never mention Geri',
+    check: (p, UI) => {
+      const shown = p.seen.join(' ') + ' ' + cardText(UI, p);
+      if (p.svc === 'geri' && /\bintern\b/i.test(shown)) return 'Geri path says "intern"';
+      if (p.svc === 'gmed' && /Geri/.test(shown)) return 'GMed path mentions Geri';
+    } },
+  { group: 'Rules · Wording', name: 'Census cap question shows 20 / 10 for GMed and 16 / 6 for Geri',
+    check: p => {
+      const q = p.seen.find(t => /census cap/i.test(t));
+      if (!q) return;
+      if (p.svc === 'gmed' && !(/20 patients/.test(q) && /10\b/.test(q))) return 'GMed numbers missing';
+      if (p.svc === 'geri' && !(/16 patients/.test(q) && /\b6\b/.test(q))) return 'Geri numbers missing';
+    } },
+  { group: 'Rules · Wording', name: 'No screen shows placeholder text',
+    check: (p, UI) => /undefined|null|NaN|\$\{/.test(p.seen.join(' ') + ' ' + cardText(UI, p)) ? 'placeholder text on screen' : undefined },
+
+  // ── Structure
+  { group: 'Rules · Structure', name: 'ED paths never end on an ICU card, and ICU paths never end on an ED card',
+    check: p => {
+      const icuCard = /^icu-/.test(p.key), src = answer(p, 'src');
+      if (src === 'ed' && icuCard) return 'ED path ended at ' + p.key;
+      if (src === 'icu' && !icuCard && !['last-day', 'rotated-off'].includes(p.key)) return 'ICU path ended at ' + p.key;
+    } },
+  { group: 'Rules · Structure', name: 'Every result card has a banner and at least one line saying what to do',
+    check: (p, UI) => {
+      const r = UI.RESULTS[p.key];
+      if (!r) return 'no card for ' + p.key;
+      if (!UI.BANNER[r.status]) return 'no banner';
+      if (!r.rules.some(x => (x === '__CAP__' ? UI.capNote(p.svc) : val(x, p.st)))) return 'no action line';
+    } },
+  { group: 'Rules · Structure', name: 'Going Back to any step returns the same screen as the first time through',
+    check: (p, UI, BB) => {
+      for (let i = 0; i < p.path.length; i++) {
+        const step = BB.run(p.svc, p.path.slice(0, i)).step;
+        if (step.screen !== p.path[i][0]) return 'step ' + (i + 1) + ' showed ' + (step.screen || step.result);
+      }
+    } },
+  { group: 'Rules · Structure', name: `No path takes more than ${MAX_QUESTIONS} questions`,
+    check: p => p.path.length > MAX_QUESTIONS ? p.path.length + ' questions' : undefined },
+];
+
+function runRules(BB, UI) {
+  const { paths, deadEnds } = allPaths(BB, UI);
+  const fmt = p => `${p.svc}: ${p.path.map(([q, a]) => q + '=' + a).join(', ')}`;
+  const rows = PATH_RULES.map(rule => {
+    const bad = [];
+    for (const p of paths) {
+      let msg;
+      try { msg = rule.check(p, UI, BB); } catch (e) { msg = 'EXCEPTION: ' + e.message; }
+      if (msg) bad.push(msg + ' — ' + fmt(p));
+    }
+    return { scenario: { group: rule.group, name: rule.name, expected: `holds on all ${paths.length} paths` },
+             passed: bad.length === 0,
+             got: bad.length ? `${bad.length} path${bad.length > 1 ? 's' : ''} fail · first: ${bad[0]}` : `holds on all ${paths.length} paths` };
+  });
+  // Whole-tool rules
+  rows.push({ scenario: { group: 'Rules · Structure', name: 'Every answer on every screen leads somewhere (no dead ends)', expected: 'no dead ends' },
+              passed: deadEnds.length === 0, got: deadEnds.length ? deadEnds.length + ' dead end(s) · first: ' + deadEnds[0] : 'no dead ends' });
+  const reached = new Set(paths.map(p => p.key));
+  const orphans = Object.keys(UI.RESULTS).filter(k => !reached.has(k));
+  rows.push({ scenario: { group: 'Rules · Structure', name: 'Every result card can be reached by at least one path', expected: 'no orphaned cards' },
+              passed: orphans.length === 0, got: orphans.length ? 'unreachable: ' + orphans.join(', ') : 'no orphaned cards' });
+  return rows;
+}
 
 async function runTests() {
-  document.getElementById('summary-status').className = 'summary-status status-loading';
-  document.getElementById('summary-status').textContent = 'Running tests...';
-  document.getElementById('pass-count').textContent = '—';
-  document.getElementById('fail-count').textContent = '—';
-  document.getElementById('total-count').textContent = '—';
+  const statusEl = document.getElementById('summary-status');
+  statusEl.className = 'summary-status status-loading';
+  statusEl.textContent = 'Running tests...';
+  ['pass-count', 'fail-count', 'total-count'].forEach(id => document.getElementById(id).textContent = '—');
   document.getElementById('test-sections').innerHTML = '';
 
-  let toolCode;
+  let BB, UI;
   try {
-    const res = await fetch('bounceback_checker.html?nocache=' + Date.now());
+    const res = await fetch('index.html?nocache=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    toolCode = await res.text();
-  } catch(e) {
-    document.getElementById('summary-status').textContent = 'Could not load bounceback_checker.html — ' + e.message;
+    const html = await res.text();
+    BB = loadLogic(html);
+    UI = loadScreens(html, BB);
+  } catch (e) {
+    statusEl.textContent = 'Could not load the tool — ' + e.message;
     return;
   }
 
-  // Extract the script block from the tool
-  const scriptMatch = toolCode.match(/<script>([\s\S]*?)<\/script>/);
-  if (!scriptMatch) {
-    document.getElementById('summary-status').textContent = 'Could not extract script from tool.';
-    return;
-  }
-
-  // Build a sandboxed runner function
-  // We replace DOM-dependent calls (show, setTag, setupQ3, setupQ4)
-  // with stubs, and capture showResult() calls via a callback
-  function makeRunner() {
-    let capturedResult = null;
-    let state = { service: null, history: [], source: null, daytype: null };
-    let currentScreen = 'home';
-
-    // Stubs for DOM functions
-    const show = (id, prog) => { currentScreen = id; };
-    const setTag = () => {};
-    const setupQ3 = () => {};
-    const setupQ4 = () => {};
-    const showResult = (key) => { capturedResult = key; };
-    const restart = () => {};
-
-    // Inline the R results object and capNote — needed only to avoid errors
-    const R = {};
-    const capNote = () => '';
-
-    // Build the answer() function from the tool's script
-    // We extract just the answer() function body
-    const scriptBody = scriptMatch[1];
-
-    // Execute the full script in this closure context so answer() is defined
-    try {
-      const fn = new Function(
-        'state', 'currentScreen', 'show', 'setTag', 'setupQ3', 'setupQ4',
-        'showResult', 'restart', 'R', 'capNote',
-        scriptBody + '\nreturn answer;'
-      );
-      const answerFn = fn(
-        state, currentScreen, show, setTag, setupQ3, setupQ4,
-        showResult, restart, R, capNote
-      );
-      return { answerFn, state, getCaptured: () => capturedResult };
-    } catch(e) {
-      return null;
-    }
-  }
-
-  // Run all scenarios
-  const results = [];
-  for (const scenario of SCENARIOS) {
-    const runner = makeRunner();
-    if (!runner) {
-      results.push({ scenario, passed: false, got: 'ENGINE ERROR', error: true });
-      continue;
-    }
-
-    const { answerFn, state, getCaptured } = runner;
-
-    try {
-      // Set the service first (simulates startService)
-      state.service = scenario.service;
-
-      // Drive through the answer sequence
-      for (const [q, val] of scenario.answers) {
-        answerFn(q, val);
-      }
-
-      const got = getCaptured();
-      results.push({
-        scenario,
-        passed: got === scenario.expected,
-        got: got || '(no result captured)'
-      });
-    } catch(e) {
-      results.push({ scenario, passed: false, got: 'EXCEPTION: ' + e.message, error: true });
-    }
-  }
-
-  // Tally
+  const results = [...SCENARIOS.map(s => runScenario(BB, s)), ...runRules(BB, UI)];
   const total = results.length;
   const passing = results.filter(r => r.passed).length;
   const failing = total - passing;
-
   document.getElementById('total-count').textContent = total;
   document.getElementById('pass-count').textContent = passing;
   document.getElementById('fail-count').textContent = failing;
-
-  const statusEl = document.getElementById('summary-status');
   if (failing === 0) {
     statusEl.className = 'summary-status status-all-pass';
     statusEl.textContent = '✓ All ' + total + ' tests passing — safe to upload';
@@ -571,60 +522,37 @@ async function runTests() {
     statusEl.textContent = failing + ' test' + (failing > 1 ? 's' : '') + ' failing — investigate before uploading';
   }
 
-  // Group and render
   const groups = {};
-  for (const r of results) {
-    const g = r.scenario.group;
-    if (!groups[g]) groups[g] = [];
-    groups[g].push(r);
-  }
-
+  for (const r of results) (groups[r.scenario.group] = groups[r.scenario.group] || []).push(r);
   const container = document.getElementById('test-sections');
   for (const [groupName, groupResults] of Object.entries(groups)) {
     const label = document.createElement('div');
     label.className = 'section-label';
     label.textContent = groupName;
     container.appendChild(label);
-
     const grid = document.createElement('div');
     grid.className = 'test-grid';
-
     for (const r of groupResults) {
+      const s = r.scenario;
+      const expected = s.expected + (s.anchor ? ' · anchor ' + s.anchor : '');
+      const isRule = s.group.startsWith('Rules');
       const row = document.createElement('div');
       row.className = 'test-row';
-
-      const badge = document.createElement('div');
-      badge.className = 'test-badge ' + (r.passed ? 'badge-pass' : 'badge-fail');
-      badge.textContent = r.passed ? 'PASS' : 'FAIL';
-
-      const body = document.createElement('div');
-      body.style.flex = '1';
-
-      const name = document.createElement('div');
-      name.className = 'test-name';
-      name.textContent = r.scenario.name;
-
-      const detail = document.createElement('div');
-      detail.className = 'test-detail';
-
-      if (r.passed) {
-        detail.innerHTML = 'Expected <span class="test-expected">' + r.scenario.expected + '</span> · Got <span class="test-expected">' + r.got + '</span>';
-      } else {
-        detail.innerHTML = 'Expected <span class="test-expected">' + r.scenario.expected + '</span> · Got <span class="test-got">' + r.got + '</span>';
-      }
-
-      body.appendChild(name);
-      body.appendChild(detail);
-      row.appendChild(badge);
-      row.appendChild(body);
+      row.innerHTML = `
+        <div class="test-badge ${r.passed ? 'badge-pass' : 'badge-fail'}">${r.passed ? 'PASS' : 'FAIL'}</div>
+        <div style="flex:1">
+          <div class="test-name"></div>
+          <div class="test-detail">${isRule
+            ? `<span class="${r.passed ? 'test-expected' : 'test-got'}">${r.got}</span>`
+            : `Expected <span class="test-expected">${expected}</span> · Got <span class="${r.passed ? 'test-expected' : 'test-got'}">${r.got}</span>`}</div>
+        </div>`;
+      row.querySelector('.test-name').textContent = s.name;
       grid.appendChild(row);
     }
-
     container.appendChild(grid);
   }
 }
 
-// Run on load
 runTests();
 </script>
 </body>

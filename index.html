@@ -22,100 +22,111 @@
   /* ── HEADER ── */
   .header { background: #ffffff; border-bottom: 1px solid #d8dce8; padding: 14px 20px 12px; position: sticky; top: 0; z-index: 10; }
   .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
-  .header h1 { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: #2563eb; letter-spacing: 0.07em; text-transform: uppercase; }
-  .va-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.04em; }
-  .header p { font-size: 12px; color: #5a6280; font-weight: 400; }
+  .header h1 { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: #2563eb; letter-spacing: 0.07em; text-transform: uppercase; }
+  .va-badge { font-family: 'DM Mono', monospace; font-size: 12px; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.04em; }
+  .header p { font-size: 15px; color: #5a6280; font-weight: 400; }
   .progress-bar { height: 3px; background: #eef0f6; margin-top: 10px; border-radius: 2px; overflow: hidden; }
   .progress-fill { height: 100%; background: #2563eb; border-radius: 2px; transition: width 0.4s ease; }
 
   /* ── MAIN CONTENT ── */
-  .main { padding: 24px 20px; max-width: 540px; margin: 0 auto; }
+  .main { padding: 24px 16px; max-width: 620px; margin: 0 auto; }
   .screen { display: none; animation: fadeUp 0.22s ease; }
   .screen.active { display: block; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* ── QUESTION SCREENS ── */
-  .step-label { font-family: 'DM Mono', monospace; font-size: 10px; color: #7a84a0; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
-  .question { font-size: 19px; font-weight: 600; color: #1a1d2e; line-height: 1.4; margin-bottom: 6px; }
-  .question-note { font-size: 13.5px; color: #3d4460; line-height: 1.6; margin-bottom: 24px; font-weight: 400; }
+  .step-label { font-family: 'DM Mono', monospace; font-size: 13px; color: #5a6280; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
+  .question { font-size: 23px; font-weight: 600; color: #1a1d2e; line-height: 1.4; margin-bottom: 10px; }
+  .question + .options { margin-top: 20px; }
+  .question-note { font-size: 17px; color: #3d4460; line-height: 1.6; margin-bottom: 24px; font-weight: 400; }
 
   /* ── OPTION BUTTONS ── */
   .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-  .opt-btn { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 14px 16px; color: #2a2f48; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; text-align: left; cursor: pointer; transition: all 0.14s ease; display: flex; align-items: center; gap: 14px; }
+  .opt-btn { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 20px 20px; min-height: 68px; color: #2a2f48; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 500; text-align: left; cursor: pointer; transition: all 0.14s ease; display: flex; align-items: center; gap: 14px; }
   .opt-btn:hover { background: #eef2ff; border-color: #2563eb; color: #1a1d2e; }
   .opt-btn:active { transform: scale(0.99); }
-  .opt-icon { width: 32px; height: 32px; border-radius: 8px; background: #eef2ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-family: 'DM Mono', monospace; color: #2563eb; font-weight: 500; }
+  .opt-icon { width: 38px; height: 38px; border-radius: 8px; background: #eef2ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-family: 'DM Mono', monospace; color: #2563eb; font-weight: 500; }
   .opt-label { flex: 1; line-height: 1.4; }
-  .opt-sub { font-size: 12px; color: #5a6280; margin-top: 3px; font-weight: 400; }
+  .opt-sub { font-size: 15px; color: #5a6280; margin-top: 3px; font-weight: 400; }
 
-  /* ── BACK BUTTON ── */
-  .back-btn { background: none; border: none; color: #7a84a0; font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; padding: 0; letter-spacing: 0.04em; transition: color 0.14s; font-weight: 400; }
-  .back-btn:hover { color: #3d4460; }
 
   /* ── RESULT CARD ── */
   .result-card { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .result-banner { font-size: 20px; font-weight: 700; line-height: 1.35; padding: 16px 20px; border-bottom: 1px solid #d8dce8; }
+  .result-banner.yes  { background: #dcfce7; color: #14532d; }
+  .result-banner.no   { background: #fee2e2; color: #991b1b; }
+  .result-banner.warn { background: #fef3c7; color: #7c2d12; }
   .result-header { padding: 18px 20px 16px; display: flex; align-items: flex-start; gap: 14px; }
   .result-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 17px; }
   .result-icon.green { background: #dcfce7; color: #15803d; }
   .result-icon.red   { background: #fee2e2; color: #dc2626; }
   .result-icon.amber { background: #fef3c7; color: #b45309; }
   .result-icon.blue  { background: #dbeafe; color: #1d4ed8; }
-  .result-verdict { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
+  .result-verdict { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 4px; font-weight: 500; }
   .result-verdict.green { color: #15803d; }
   .result-verdict.red   { color: #dc2626; }
   .result-verdict.amber { color: #b45309; }
   .result-verdict.blue  { color: #1d4ed8; }
-  .result-title { font-size: 15px; font-weight: 600; color: #1a1d2e; line-height: 1.4; }
+  .result-title { font-size: 20px; font-weight: 600; color: #1a1d2e; line-height: 1.4; }
   .result-divider { height: 1px; background: #eef0f6; margin: 0 20px; }
   .result-body { padding: 14px 20px 18px; }
-  .result-detail { font-size: 13.5px; color: #3d4460; line-height: 1.6; margin-bottom: 14px; font-weight: 400; }
-  .result-rule { background: #eef0f6; border: 1px solid #d8dce8; border-left: 3px solid #d8dce8; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #2a2f48; line-height: 1.55; margin-bottom: 8px; font-weight: 400; }
+  .result-detail { font-size: 17px; color: #3d4460; line-height: 1.6; margin-bottom: 14px; font-weight: 400; }
+  .result-rule { background: #eef0f6; border: 1px solid #d8dce8; border-left: 3px solid #d8dce8; border-radius: 6px; padding: 11px 14px; font-size: 16px; color: #2a2f48; line-height: 1.55; margin-bottom: 8px; font-weight: 400; }
   .result-rule.green { border-left-color: #15803d; }
   .result-rule.red   { border-left-color: #dc2626; }
   .result-rule.amber { border-left-color: #b45309; }
   .result-rule.blue  { border-left-color: #1d4ed8; }
 
   /* ── RESTART BUTTON ── */
-  .restart-btn { width: 100%; background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 13px; color: #2563eb; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; font-weight: 500; }
+  .restart-btn { width: 100%; background: #ffffff; border: 1.5px solid #2563eb; border-radius: 12px; padding: 18px; color: #2563eb; font-family: 'DM Mono', monospace; font-size: 15px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; font-weight: 500; }
   .restart-btn:hover { background: #eef2ff; border-color: #2563eb; }
 
   /* ── RESULT ACTIONS ROW ── */
-  .result-actions { display: flex; gap: 10px; margin-top: 4px; }
-  .result-back-btn { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 13px 18px; color: #7a84a0; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; white-space: nowrap; font-weight: 500; }
-  .result-back-btn:hover { background: #f0f2f8; border-color: #9ca3b8; color: #3d4460; }
+  .result-actions { display: flex; gap: 10px; margin-top: 4px; margin-bottom: 4px; }
+  .result-back-btn { background: #ffffff; border: 1.5px solid #9aa3bd; border-radius: 12px; padding: 18px 22px; color: #1a1d2e; font-family: 'DM Mono', monospace; font-size: 15px; letter-spacing: 0.05em; cursor: pointer; transition: all 0.14s; white-space: nowrap; font-weight: 500; }
+  .result-back-btn:hover { background: #f0f2f8; border-color: #5a6280; color: #1a1d2e; }
   .result-actions .restart-btn { flex: 1; width: auto; }
 
   /* ── ANSWER CHIPS ── */
-  .answer-summary { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
-  .answer-summary-label { width: 100%; font-family: 'DM Mono', monospace; font-size: 9px; color: #9ca3b8; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; font-weight: 500; }
+  details.answers { margin: 16px 0 18px; }
+  details.answers summary { cursor: pointer; font-size: 15px; color: #3d4460; font-weight: 500; padding: 8px 0; list-style: revert; }
+  details.answers[open] summary { margin-bottom: 8px; }
+  .answer-summary { display: flex; flex-wrap: wrap; gap: 6px; }
+  .answer-summary-label { width: 100%; font-family: 'DM Mono', monospace; font-size: 12px; color: #5a6280; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; font-weight: 500; }
   .answer-chip { display: flex; align-items: center; gap: 5px; background: #f0f2f8; border: 1px solid #d8dce8; border-radius: 20px; padding: 3px 10px 3px 8px; max-width: 100%; }
-  .answer-chip-step { font-family: 'DM Mono', monospace; font-size: 9px; color: #7a84a0; white-space: nowrap; font-weight: 500; }
+  .answer-chip-step { font-family: 'DM Mono', monospace; font-size: 12px; color: #5a6280; white-space: nowrap; font-weight: 500; }
   .answer-chip-step::after { content: '·'; margin-left: 5px; color: #d8dce8; }
-  .answer-chip-val { font-size: 11.5px; color: #2a2f48; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .answer-chip-val { font-size: 14px; color: #2a2f48; font-weight: 500; white-space: normal; }
 
   /* ── HOME SCREEN ── */
   .home-screen { padding-top: 4px; }
-  .home-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; color: #7a84a0; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
-  .home-title { font-size: 26px; font-weight: 600; color: #1a1d2e; line-height: 1.25; margin-bottom: 8px; }
+  .home-eyebrow { font-family: 'DM Mono', monospace; font-size: 13px; color: #5a6280; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
+  .home-title { font-size: 30px; font-weight: 600; color: #1a1d2e; line-height: 1.25; margin-bottom: 8px; }
   .home-title span { color: #2563eb; }
-  .home-sub { font-size: 13.5px; color: #3d4460; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
+  .home-sub { font-size: 17px; color: #3d4460; line-height: 1.6; margin-bottom: 20px; font-weight: 400; }
 
   /* ── SERVICE BUTTONS ── */
-  .service-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 28px; }
-  .service-btn { background: #ffffff; border: 1.5px solid #d8dce8; border-radius: 10px; padding: 16px 10px; text-align: center; cursor: pointer; transition: all 0.14s; color: #3d4460; font-size: 13px; font-weight: 500; }
-  .service-btn:hover { border-color: #2563eb; color: #1d4fd8; background: #eef2ff; }
+  .service-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 28px; }
+  .service-btn { background: #2563eb; border: none; border-radius: 12px; padding: 24px 18px; cursor: pointer; transition: all 0.14s; color: #ffffff; font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25); text-align: left; }
+  .service-btn:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); }
+  .service-btn .svc-arrow { font-size: 20px; flex-shrink: 0; }
+  .service-label { font-family: 'DM Mono', monospace; font-size: 13px; color: #5a6280; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-weight: 500; }
   .service-btn:active { transform: scale(0.97); }
-  .service-btn .svc-abbr { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: #2563eb; display: block; margin-bottom: 6px; }
 
   /* ── SITE NOTE + FOOTNOTE ── */
-  .site-note { background: #fffbeb; border: 1px solid #f5c842; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7a4a00; line-height: 1.5; margin-bottom: 20px; font-weight: 400; }
-  .footnote { font-size: 11px; color: #7a84a0; text-align: center; font-family: 'DM Mono', monospace; padding-top: 4px; font-weight: 400; }
+  .site-note { background: #fffbeb; border: 1px solid #f5c842; border-radius: 8px; padding: 10px 14px; font-size: 15px; color: #7a4a00; line-height: 1.5; margin-bottom: 20px; font-weight: 400; }
+  .policy-note { font-size: 15px; color: #3d4460; line-height: 1.55; background: #ffffff; border: 1px solid #d8dce8; border-radius: 8px; padding: 12px 14px; margin-bottom: 20px; }
+  .policy-note strong { color: #1a1d2e; font-weight: 600; }
+  .footnote { font-size: 13px; color: #5a6280; text-align: center; font-family: 'DM Mono', monospace; padding-top: 4px; font-weight: 400; }
 
   /* ── SERVICE TAGS ── */
-  .service-tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.05em; }
+  .service-tag { display: inline-block; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.05em; }
   .tag-gmed  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
   .tag-geri  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
   .tag-cards { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+  .service-btn { justify-content: center; text-align: center; position: relative; }
+  .service-btn .svc-arrow { position: absolute; right: 18px; }
+  @media (min-width: 600px) { .site-note, .policy-note { text-align: center; } }
 </style>
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "8b13dbcebaf64ce992b73d0cac8e5dfc"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -123,7 +134,7 @@
 
 <div class="header">
   <div class="header-top">
-    <h1>Bounceback Checker</h1>
+    <h1 onclick="restart()" style="cursor:pointer" title="Back to home">Bounceback Checker</h1>
     <span class="va-badge">VA GLA</span>
   </div>
   <p>Walk through eligibility and routing step by step</p>
@@ -136,710 +147,607 @@
   <div class="screen active home-screen" id="screen-home">
     <p class="home-eyebrow">VA GLA · Inpatient Medicine</p>
     <p class="home-title">Is this patient a <span>bounceback?</span></p>
-    <p class="home-sub">Answer a few questions to determine eligibility and who admits the patient. Select the service to begin.</p>
+    <p class="home-sub">Answer a few questions to find out whether the patient bounces back and who admits them.</p>
     <div class="site-note">⚠ VA policies only — bounceback rules differ at UCLA.</div>
+    <div class="policy-note">Based on the <strong>VA Bounceback Policies on MedRes</strong>.<br>Questions or concerns? Contact the <strong>MOD</strong> to discuss.</div>
+    <p class="service-label">Choose a service to start</p>
     <div class="service-grid">
-      <div class="service-btn" onclick="startService('gmed')"><span class="svc-abbr">GM</span>General Medicine</div>
-      <div class="service-btn" onclick="startService('geri')"><span class="svc-abbr">GR</span>Geriatrics</div>
-      <div class="service-btn" onclick="startService('cards')"><span class="svc-abbr">CA</span>Cardiology</div>
+      <button class="service-btn" onclick="startService('gmed')"><span>General Medicine</span><span class="svc-arrow">→</span></button>
+      <button class="service-btn" onclick="startService('geri')"><span>Geriatrics</span><span class="svc-arrow">→</span></button>
+      <button class="service-btn" onclick="startService('cards')"><span>Cardiology</span><span class="svc-arrow">→</span></button>
     </div>
-    <p class="footnote">Last updated July 2026</p>
+    <p class="footnote">Created by George Tran, MD · Last updated September 2026</p>
   </div>
 
-  <!-- Q1: 14 days -->
-  <div class="screen" id="screen-q1">
-    <p class="step-label" id="q1-step">Step 1 of 4 — Eligibility</p>
-    <div id="q1-tag"></div>
-    <p class="question">Was this patient cared for by this team within the past 14 days?</p>
-    <p class="question-note">Counts from the date the team last had primary responsibility. Night float and cross-cover do not count.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('q1','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — within 14 days</div></button>
-      <button class="opt-btn" onclick="answer('q1','no')"><div class="opt-icon">N</div><div class="opt-label">No — more than 14 days, or never cared for by this team</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- Q2: Cardiology chief concern -->
-  <div class="screen" id="screen-q2">
-    <p class="step-label">Step 2 of 2 — Eligibility</p>
-    <div class="service-tag tag-cards">Cardiology</div>
-    <p class="question">Is the chief concern cardiac, or a problem actively addressed during the prior admission?</p>
-    <p class="question-note">A new unrelated problem does not qualify. If yes, the bounceback is confirmed — routing depends only on source and time of day.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('q2','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — cardiac or previously addressed issue</div></button>
-      <button class="opt-btn" onclick="answer('q2','no')"><div class="opt-icon">N</div><div class="opt-label">No — new unrelated problem</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- Q3: Last day -->
-  <div class="screen" id="screen-q3">
-    <p class="step-label">Step 3 of 4 — Eligibility</p>
-    <div id="q3-tag"></div>
-    <p class="question" id="q3-text"></p>
-    <p class="question-note">This means the last day they're actually present caring for patients — not the rotation's official end date. Example: the rotation ends Wednesday, but the intern is off that day — Tuesday is their last day, so a patient would not be a bounceback if presenting Tuesday.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('q3','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — last day of direct patient care</div></button>
-      <button class="opt-btn" onclick="answer('q3','no')"><div class="opt-icon">N</div><div class="opt-label">No — not their last day of direct patient care</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- Q4: Presence -->
-  <div class="screen" id="screen-q4">
-    <p class="step-label">Step 4 of 4 — Eligibility</p>
-    <div id="q4-tag"></div>
-    <p class="question" id="q4-text"></p>
-    <p class="question-note" id="q4-note"></p>
-    <div class="options" id="q4-options"></div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- Q5: Source -->
-  <div class="screen" id="screen-q5">
-    <p class="step-label">Routing — source</p>
-    <div id="q5-tag"></div>
-    <p class="question">Where is the patient coming from?</p>
-    <p class="question-note">This determines which admission routing rules apply.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('q5','ed')"><div class="opt-icon">ED</div><div class="opt-label">Emergency Department</div></button>
-      <button class="opt-btn" onclick="answer('q5','icu')"><div class="opt-icon">ICU</div><div class="opt-label">ICU / step-down (downgrade)</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- Q6: Day type -->
-  <div class="screen" id="screen-q6">
-    <p class="step-label">Routing — day type</p>
-    <div id="q6-tag"></div>
-    <p class="question">Is today a weekday or weekend / holiday?</p>
-    <p class="question-note"></p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('q6','weekday')"><div class="opt-icon">WD</div><div class="opt-label">Weekday — Monday through Friday, non-holiday</div></button>
-      <button class="opt-btn" onclick="answer('q6','weekend')"><div class="opt-icon">WE</div><div class="opt-label">Weekend or holiday</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKDAY TIME: GMed + Geri -->
-  <div class="screen" id="screen-ed-wd-time">
-    <p class="step-label">Routing — ED weekday</p>
-    <div id="ed-wd-tag"></div>
-    <p class="question">What time is it now?</p>
-    <p class="question-note">The 4 PM cutoff determines who handles the admission.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwdtime','before4')"><div class="opt-icon">&lt;4</div><div class="opt-label">Before 4 PM</div></button>
-      <button class="opt-btn" onclick="answer('edwdtime','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKDAY AFTER 4PM: GMed long call check -->
-  <div class="screen" id="screen-ed-wd-lc">
-    <p class="step-label">Routing — ED weekday after 4 PM</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">Does this bounceback belong to the long call team?</p>
-    <p class="question-note">After 4 PM, long call can admit their own bouncebacks only if they have not capped — 20 total patients, or the bounceback intern already has 10.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwdlc','yes-open')"><div class="opt-icon">Y</div><div class="opt-label">Yes — and long call has not capped</div></button>
-      <button class="opt-btn" onclick="answer('edwdlc','yes-capped')"><div class="opt-icon">Y</div><div class="opt-label">Yes — but long call is capped</div></button>
-      <button class="opt-btn" onclick="answer('edwdlc','no')"><div class="opt-icon">N</div><div class="opt-label">No — belongs to a different team</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKEND: GMed team type -->
-  <div class="screen" id="screen-ed-we-gmed">
-    <p class="step-label">Routing — ED weekend</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">Does this bounceback belong to the long call team or a non-call team?</p>
-    <p class="question-note">On weekends, only one GMed team is on long call. All other GMed teams are non-call.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwegmed','lc')"><div class="opt-icon">LC</div><div class="opt-label">Long call team</div></button>
-      <button class="opt-btn" onclick="answer('edwegmed','nc')"><div class="opt-icon">NC</div><div class="opt-label">Non-call team</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKEND GMed long call time -->
-  <div class="screen" id="screen-ed-we-lc-time">
-    <p class="step-label">Routing — ED weekend, long call</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">What time is it now?</p>
-    <p class="question-note">Long call can admit their own bouncebacks up to 6 PM on weekends.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwelctime','before6')"><div class="opt-icon">&lt;6</div><div class="opt-label">Before 6 PM — long call not capped</div></button>
-      <button class="opt-btn" onclick="answer('edwelctime','capped')"><div class="opt-icon">&lt;6</div><div class="opt-label">Before 6 PM — but long call is capped</div></button>
-      <button class="opt-btn" onclick="answer('edwelctime','after6')"><div class="opt-icon">&gt;6</div><div class="opt-label">After 6 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKEND GMed non-call time -->
-  <div class="screen" id="screen-ed-we-nc-time">
-    <p class="step-label">Routing — ED weekend, non-call team</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">What time is it now?</p>
-    <p class="question-note">Non-call teams can accept bouncebacks before noon. Between noon and 4 PM, long call admits and holds over.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwenctime','before12')"><div class="opt-icon">&lt;12</div><div class="opt-label">Before noon</div></button>
-      <button class="opt-btn" onclick="answer('edwenctime','noon4')"><div class="opt-icon">12–4</div><div class="opt-label">Noon to 4 PM</div></button>
-      <button class="opt-btn" onclick="answer('edwenctime','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKEND GERI: time -->
-  <div class="screen" id="screen-ed-we-geri">
-    <p class="step-label">Routing — ED weekend</p>
-    <div class="service-tag tag-geri">Geriatrics</div>
-    <p class="question">What time is it now?</p>
-    <p class="question-note">Geri uses the same weekend pipeline as GMed non-call teams. Before noon the Geri team admits directly; noon–4 PM GMed long call admits and holds over; after 4 PM NAR admits.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwegeri','before12')"><div class="opt-icon">&lt;12</div><div class="opt-label">Before noon</div></button>
-      <button class="opt-btn" onclick="answer('edwegeri','noon4')"><div class="opt-icon">12–4</div><div class="opt-label">Noon to 4 PM</div></button>
-      <button class="opt-btn" onclick="answer('edwegeri','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED WEEKEND GERI: long call cap check (noon–4pm) -->
-  <div class="screen" id="screen-ed-we-geri-lc">
-    <p class="step-label">Routing — ED weekend, Geri noon–4 PM</p>
-    <div class="service-tag tag-geri">Geriatrics</div>
-    <p class="question">Is GMed long call capped?</p>
-    <p class="question-note">Between noon and 4 PM, GMed long call admits the Geri bounceback and holds over — as long as long call has not capped (20 total patients, or the intern has 10).</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edwegerilc','not-capped')"><div class="opt-icon">N</div><div class="opt-label">No — GMed long call has not capped</div></button>
-      <button class="opt-btn" onclick="answer('edwegerilc','capped')"><div class="opt-icon">Y</div><div class="opt-label">Yes — GMed long call is capped</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ED CARDIOLOGY: time -->
-  <div class="screen" id="screen-ed-cards">
-    <p class="step-label">Routing — ED</p>
-    <div class="service-tag tag-cards">Cardiology</div>
-    <p class="question">What time is it now?</p>
-    <p class="question-note">The on-call Cardiology team admits from 7 AM to 4 PM. The Cardiology night admitting resident takes over after 4 PM.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('edcards','before4')"><div class="opt-icon">&lt;4</div><div class="opt-label">Before 4 PM</div></button>
-      <button class="opt-btn" onclick="answer('edcards','after4')"><div class="opt-icon">&gt;4</div><div class="opt-label">After 4 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ICU WEEKDAY -->
-  <div class="screen" id="screen-icu-wd">
-    <p class="step-label">Routing — ICU weekday</p>
-    <div id="icu-wd-tag"></div>
-    <p class="question">Has the accepting team been notified by 4 PM?</p>
-    <p class="question-note">The ICU must notify the accepting team by 4 PM for the transfer to proceed today.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('icuwd','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — notified by 4 PM</div></button>
-      <button class="opt-btn" onclick="answer('icuwd','no')"><div class="opt-icon">N</div><div class="opt-label">No — not notified by 4 PM</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ICU WEEKEND GMed: long call vs non-call -->
-  <div class="screen" id="screen-icu-we-gmed">
-    <p class="step-label">Routing — ICU weekend</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">Does this bounceback belong to the long call team or a non-call team?</p>
-    <p class="question-note">Long call has no noon cutoff for ICU bouncebacks on weekends. Non-call teams must be notified by noon.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('icuwegmed','lc')"><div class="opt-icon">LC</div><div class="opt-label">Long call team</div></button>
-      <button class="opt-btn" onclick="answer('icuwegmed','nc')"><div class="opt-icon">NC</div><div class="opt-label">Non-call team</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ICU WEEKEND GMed non-call: noon cutoff -->
-  <div class="screen" id="screen-icu-we-nc">
-    <p class="step-label">Routing — ICU weekend, non-call team</p>
-    <div class="service-tag tag-gmed">General Medicine</div>
-    <p class="question">Has the accepting team been notified by noon?</p>
-    <p class="question-note">Non-call teams on weekends must be notified by noon for the transfer to proceed today.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('icuwenc','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — notified by noon</div></button>
-      <button class="opt-btn" onclick="answer('icuwenc','no')"><div class="opt-icon">N</div><div class="opt-label">No — missed noon cutoff</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
-
-  <!-- ICU WEEKEND Geri + Cards: straight noon cutoff -->
-  <div class="screen" id="screen-icu-we-noon">
-    <p class="step-label">Routing — ICU weekend</p>
-    <div id="icu-we-noon-tag"></div>
-    <p class="question">Has the accepting team been notified by noon?</p>
-    <p class="question-note">The noon cutoff applies on weekends for this service. If missed, the ICU retains the patient.</p>
-    <div class="options">
-      <button class="opt-btn" onclick="answer('icuwenoon','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — notified by noon</div></button>
-      <button class="opt-btn" onclick="answer('icuwenoon','no')"><div class="opt-icon">N</div><div class="opt-label">No — missed noon cutoff</div></button>
-    </div>
-    <button class="back-btn" onclick="goBack()">← back</button>
-  </div>
+  <!-- QUESTION (rendered from the current answers) -->
+  <div class="screen" id="screen-question"></div>
 
   <!-- RESULT -->
   <div class="screen" id="screen-result">
     <div id="result-content"></div>
     <div class="result-actions">
-      <button class="result-back-btn" onclick="resultGoBack()">← Back</button>
-      <button class="restart-btn" onclick="restart()">↺ Start over</button>
+      <button class="result-back-btn" onclick="goBack()">← Back</button>
+      <button class="restart-btn" onclick="restart()">⌂ Home</button>
     </div>
+    <div id="result-answers"></div>
+    <div class="policy-note">Based on the <strong>VA Bounceback Policies on MedRes</strong>.<br>Questions or concerns? Contact the <strong>MOD</strong> to discuss.</div>
   </div>
 
 </div>
 
+<script id="bb-logic">
+  // ── ROUTING LOGIC (pure — no DOM) ─────────────────────────────
+  // Routing is asked first (source → time frame → team), then eligibility
+  // (census cap → last day → working). Routing decides whether the original
+  // team takes the patient today or at the next 7 AM handoff, and the
+  // eligibility questions are worded for that day.
+  // tests.html loads this block by its id and calls BB.run().
+
+  function freshState(service) {
+    return { service, source: null, frame: null, team: null, sched: null, route: null, anchor: null };
+  }
+
+  function firstScreen() { return 'q1'; }
+
+  const S = id => ({ screen: id });
+  const R = key => ({ result: key });
+
+  // Where an ED bounceback goes, by service, time frame and team
+  function edRoute(st) {
+    const f = st.frame;
+    if (st.service === 'geri') {
+      return { 'wd-day': 'orig', 'we-am': 'orig', 'we-pm': 'lc-hold-geri', 'after4': 'nar-hold-geri' }[f];
+    }
+    if (f === 'wd-day' || f === 'we-am') return 'orig';
+    const lc = st.team === 'lc';
+    if (f === 'we-pm') return lc ? 'lc-own' : 'lc-hold';
+    if (f === 'eve')   return lc ? 'lc-own' : 'nar-hold';
+    return lc ? 'nar-lc-list' : 'nar-hold';           // 'night'
+  }
+
+  // The original team assumes care today only when it takes the patient now
+  function anchorFor(route) {
+    return (route === 'orig' || route === 'lc-own') ? 'today' : 'handoff';
+  }
+
+  function edResultKey(st) {
+    if (st.route === 'orig') return st.service === 'geri' ? 'orig-admits-geri' : 'orig-admits';
+    return st.route;
+  }
+
+  // After an ICU cutoff is met: Cardiology is done; GMed / Geri go on to eligibility
+  function afterIcu(st, routeKey) {
+    st.route = routeKey;
+    if (st.service === 'cards') return R(routeKey);
+    st.anchor = 'today';
+    return S('cap');
+  }
+
+  function nextStep(st, q, v) {
+    const svc = st.service;
+    switch (q) {
+      case 'q1':
+        if (v === 'no') return R('not-bb');
+        return svc === 'cards' ? S('q2') : S('src');
+      case 'q2':
+        if (v === 'no') return R('not-bb');
+        return S('src');
+      case 'src':
+        st.source = v;
+        if (v === 'ed') return svc === 'cards' ? S('cards-time') : S('frame');
+        return S('icu-sched');
+      case 'cards-time':
+        return R(v === 'day' ? 'ed-cards-before4' : 'ed-cards-after4');
+      case 'frame':
+        st.frame = v;
+        if (svc === 'gmed' && ['we-pm', 'eve', 'night'].includes(v)) return S('team');
+        st.route = edRoute(st);
+        st.anchor = anchorFor(st.route);
+        return S('cap');
+      case 'team':
+        st.team = v;
+        st.route = edRoute(st);
+        st.anchor = anchorFor(st.route);
+        return S('cap');
+      case 'icu-sched':
+        st.sched = v;
+        if (v === 'weekday') return S('icu-wd');
+        return svc === 'gmed' ? S('icu-we-team') : S('icu-we-noon');
+      case 'icu-wd':
+        return v === 'no' ? R('icu-wd-no') : afterIcu(st, 'icu-wd-yes');
+      case 'icu-we-team':
+        st.team = v;
+        return v === 'lc' ? afterIcu(st, 'icu-we-lc') : S('icu-we-nc');
+      case 'icu-we-nc':
+        return v === 'no' ? R('icu-we-nc-no') : afterIcu(st, 'icu-we-nc-yes');
+      case 'icu-we-noon':
+        return v === 'no' ? R('icu-we-noon-no') : afterIcu(st, 'icu-we-noon-yes');
+      case 'cap':
+        if (v === 'no') return R(st.source === 'icu' ? 'icu-at-cap' : 'at-cap');
+        return S('last');
+      case 'last':
+        if (v === 'yes') return R('last-day');
+        if (v === 'rotated') return R('rotated-off');
+        return S('work');
+      case 'work':
+        if (v === 'yes' || v === 'res-known') return R(st.source === 'icu' ? st.route : edResultKey(st));
+        return R(st.source === 'icu' ? 'icu-hold' : 'off-ed');
+    }
+    throw new Error('Unknown question: ' + q);
+  }
+
+  // Replays a path of [question, answer] pairs from the start
+  function run(service, path) {
+    const st = freshState(service);
+    let step = S(firstScreen());
+    for (const [q, v] of path) {
+      if (step.result) throw new Error('Answer given after a result was reached: ' + q);
+      if (step.screen !== q) throw new Error('Expected screen "' + step.screen + '" but got an answer for "' + q + '"');
+      step = nextStep(st, q, v);
+    }
+    return { st, step };
+  }
+
+  const BB = { freshState, firstScreen, nextStep, run };
+  if (typeof window !== 'undefined') window.BB = BB;
+</script>
+
 <script>
-  const state = { service: null, history: [], source: null, daytype: null, answers: [] };
+  // ── SCREEN TEXT ───────────────────────────────────────────────
+  // Every question is built from the current state, so wording can follow
+  // the service and whether the original team takes over today or at 7 AM.
 
-  // ── ANSWER LABEL MAP ──────────────────────────────────────────
-  // Maps [question_key, answer_value] → { step (display name), label (readable value) }
-  const ANSWER_LABELS = {
-    'q1': {
-      label: 'Within 14 days',
-      values: { 'yes': 'Yes', 'no': 'No — not a bounceback' }
-    },
-    'q2': {
-      label: 'Chief concern',
-      values: { 'yes': 'Cardiac / prior issue', 'no': 'Unrelated — not a bounceback' }
-    },
-    'q3': {
-      label: 'Last day of patient care',
-      values: { 'yes': 'Yes — cannot bounce', 'no': 'No' }
-    },
-    'q4': {
-      label: 'Original intern / resident',
-      values: {
-        'yes': 'Present today',
-        'res-known': 'Intern off — resident knew patient',
-        'res-new': 'Intern off — resident new to patient',
-        'no-geri': 'Resident off — cannot bounce'
-      }
-    },
-    'q5': {
-      label: 'Source',
-      values: { 'ed': 'Emergency Department', 'icu': 'ICU / step-down' }
-    },
-    'q6': {
-      label: 'Day type',
-      values: { 'weekday': 'Weekday', 'weekend': 'Weekend / holiday' }
-    },
-    'edwdtime': {
-      label: 'Time',
-      values: { 'before4': 'Before 4 PM', 'after4': 'After 4 PM' }
-    },
-    'edwdlc': {
-      label: 'Long call status',
-      values: { 'yes-open': 'Long call — not capped', 'yes-capped': 'Long call — capped', 'no': 'Not long call team' }
-    },
-    'edwegmed': {
-      label: 'Team type',
-      values: { 'lc': 'Long call team', 'nc': 'Non-call team' }
-    },
-    'edwelctime': {
-      label: 'Time',
-      values: { 'before6': 'Before 6 PM — not capped', 'capped': 'Before 6 PM — capped', 'after6': 'After 6 PM' }
-    },
-    'edwenctime': {
-      label: 'Time',
-      values: { 'before12': 'Before noon', 'noon4': 'Noon – 4 PM', 'after4': 'After 4 PM' }
-    },
-    'edwegeri': {
-      label: 'Time',
-      values: { 'before12': 'Before noon', 'noon4': 'Noon – 4 PM', 'after4': 'After 4 PM' }
-    },
-    'edwegerilc': {
-      label: 'Long call status',
-      values: { 'not-capped': 'Long call — not capped', 'capped': 'Long call — capped' }
-    },
-    'edcards': {
-      label: 'Time',
-      values: { 'before4': 'Before 4 PM', 'after4': 'After 4 PM' }
-    },
-    'icuwd': {
-      label: 'Notified by 4 PM',
-      values: { 'yes': 'Yes', 'no': 'No' }
-    },
-    'icuwe': {
-      label: 'Day type',
-      values: { 'weekday': 'Weekday', 'weekend': 'Weekend / holiday' }
-    },
-    'icuwegmed': {
-      label: 'Team type',
-      values: { 'lc': 'Long call team', 'nc': 'Non-call team' }
-    },
-    'icuwenc': {
-      label: 'Notified by noon',
-      values: { 'yes': 'Yes', 'no': 'No' }
-    },
-    'icuwenoon': {
-      label: 'Notified by noon',
-      values: { 'yes': 'Yes', 'no': 'No' }
-    }
-  };
-  let currentScreen = 'home';
+  const SVC_NAME = { gmed: 'General Medicine', geri: 'Geriatrics', cards: 'Cardiology' };
+  const TEAM_WORD = { gmed: 'GMed', geri: 'Geri', cards: 'Cardiology' };
 
-  const tagHtml = {
-    gmed:  '<div class="service-tag tag-gmed">General Medicine</div>',
-    geri:  '<div class="service-tag tag-geri">Geriatrics</div>',
-    cards: '<div class="service-tag tag-cards">Cardiology</div>'
-  };
+  function person(st) { return st.service === 'geri' ? 'Geri resident' : 'intern'; }
+  function held(st)   { return st.anchor === 'handoff'; }
 
-  // Stores the pending answer for the current screen — set in answer(), committed in show()
-  let pendingAnswer = null;
+  const NEW_ADMISSION_ED = 'Admit to the on-call team (overnight, the NAR admits and distributes as usual).';
 
-  function show(id, prog) {
-    // Commit the pending answer chip, tagged with current history depth
-    if (pendingAnswer && currentScreen !== 'home' && currentScreen !== 'result') {
-      const map = ANSWER_LABELS[pendingAnswer.q];
-      if (map) {
-        const label = map.values[pendingAnswer.val] || pendingAnswer.val;
-        const depth = state.history.length;
-        const idx = state.answers.findIndex(a => a.q === pendingAnswer.q);
-        if (idx >= 0) state.answers.splice(idx, 1);
-        state.answers.push({ q: pendingAnswer.q, step: map.label, label, depth });
-      }
-    }
-    pendingAnswer = null;
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
-    currentScreen = id;
-    window.scrollTo(0, 0);
-    if (prog !== undefined) document.getElementById('progress').style.width = prog + '%';
-    if (id !== 'home' && id !== 'result') renderAnswerSummary(id);
-  }
-
-  function renderAnswerSummary(screenId) {
-    const screen = document.getElementById('screen-' + screenId);
-    if (!screen) return;
-    let existing = screen.querySelector('.answer-summary');
-    if (state.answers.length === 0) {
-      if (existing) existing.remove();
-      return;
-    }
-    if (!existing) {
-      existing = document.createElement('div');
-      existing.className = 'answer-summary';
-      const opts = screen.querySelector('.options');
-      if (opts) screen.insertBefore(existing, opts);
-      else screen.appendChild(existing);
-    }
-    const svcNames = { gmed: 'General Medicine', geri: 'Geriatrics', cards: 'Cardiology' };
-    let html = '<div class="answer-summary-label">Your answers so far</div>';
-    html += `<div class="answer-chip"><span class="answer-chip-step">Service</span><span class="answer-chip-val">${svcNames[state.service] || state.service}</span></div>`;
-    state.answers.forEach(a => {
-      html += `<div class="answer-chip"><span class="answer-chip-step">${a.step}</span><span class="answer-chip-val">${a.label}</span></div>`;
-    });
-    existing.innerHTML = html;
-  }
-
-  function resultGoBack() {
-    pendingAnswer = null;
-    const dest = state.history[state.history.length - 1] || 'home';
-    if (dest === 'home') { restart(); return; }
-    state.answers = state.answers.filter(a => a.depth < state.history.length);
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + dest).classList.add('active');
-    currentScreen = dest;
-    window.scrollTo(0, 0);
-    renderAnswerSummary(dest);
-  }
-
-  function setTag(elId, svc) {
-    const el = document.getElementById(elId);
-    if (el) el.innerHTML = tagHtml[svc] || '';
-  }
-
-  function startService(svc) {
-    state.service = svc;
-    state.history = ['home'];
-    state.answers = [];
-    setTag('q1-tag', svc);
-    document.getElementById('q1-step').textContent = svc === 'cards'
-      ? 'Step 1 of 2 — Eligibility'
-      : 'Step 1 of 4 — Eligibility';
-    setupQ3(svc);
-    setupQ4(svc);
-    show('q1', 10);
-  }
-
-  function setupQ3(svc) {
-    setTag('q3-tag', svc);
-    document.getElementById('q3-text').textContent = svc === 'geri'
-      ? "Is today the original Geri resident's last day of direct patient care?"
-      : "Is today the original intern's last day of direct patient care?";
-  }
-
-  function setupQ4(svc) {
-    setTag('q4-tag', svc);
-    const opts = document.getElementById('q4-options');
-    if (svc === 'geri') {
-      document.getElementById('q4-text').textContent = "Is the original Geri resident present today?";
-      document.getElementById('q4-note').textContent = "Bouncebacks on Geri follow the resident, not the intern. If the original resident is off, the bounceback cannot proceed that day.";
-      opts.innerHTML = `
-        <button class="opt-btn" onclick="answer('q4','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — original resident is present</div></button>
-        <button class="opt-btn" onclick="answer('q4','no-geri')"><div class="opt-icon">N</div><div class="opt-label">No — original resident is off today</div></button>`;
-    } else {
-      document.getElementById('q4-text').textContent = "Is the original intern present today?";
-      document.getElementById('q4-note').textContent = "If the intern is off, the answer depends on whether the current resident previously cared for this patient.";
-      opts.innerHTML = `
-        <button class="opt-btn" onclick="answer('q4','yes')"><div class="opt-icon">Y</div><div class="opt-label">Yes — original intern is present</div></button>
-        <button class="opt-btn" onclick="answer('q4','res-known')"><div class="opt-icon">N</div><div class="opt-label"><div>No — intern is off</div><div class="opt-sub">Current resident previously cared for this patient</div></div></button>
-        <button class="opt-btn" onclick="answer('q4','res-new')"><div class="opt-icon">N</div><div class="opt-label"><div>No — intern is off</div><div class="opt-sub">Current resident did NOT previously care for this patient</div></div></button>`;
-    }
-  }
-
-  function answer(q, val) {
-    pendingAnswer = { q, val };  // will be committed to chips when show() is called
-    state.history.push(currentScreen);
-    const svc = state.service;
-
-    if (q === 'q1') {
-      if (val === 'no') return showResult('not-bb');
-      if (svc === 'cards') show('q2', 33); // Cards: Q1 → Q2 (chief concern) → routing
-      else { show('q3', 30); }
-
-    } else if (q === 'q2') {
-      if (val === 'no') return showResult('not-bb');
-      // Cardiology: eligibility confirmed — go straight to routing
-      if (svc === 'cards') {
-        setTag('q5-tag', svc);
-        setTag('icu-wd-tag', svc);
-        show('q5', 66);
-      } else {
-        show('q3', 30);
-      }
-
-    } else if (q === 'q3') {
-      if (val === 'yes') return showResult('last-day');
-      show('q4', 45);
-
-    } else if (q === 'q4') {
-      if (val === 'no-geri') return showResult('geri-no-resident');
-      if (val === 'res-new') return showResult('hold-intern');
-      setTag('q5-tag', svc);
-      setTag('q6-tag', svc);
-      setTag('ed-wd-tag', svc);
-      setTag('icu-wd-tag', svc);
-      show('q5', 60);
-
-    } else if (q === 'q5') {
-      state.source = val;
-      // Cardiology ED skips day type — straight to time
-      if (svc === 'cards' && val === 'ed') show('ed-cards', 80);
-      else if (svc === 'cards' && val === 'icu') show('q6', 80); // ICU needs day type
-      else show('q6', 75);
-
-    } else if (q === 'q6') {
-      state.daytype = val;
-      if (state.source === 'ed') {
-        if (val === 'weekday') show('ed-wd-time', 85);
-        else {
-          if (svc === 'gmed') show('ed-we-gmed', 85);
-          else if (svc === 'geri') show('ed-we-geri', 85);
-          else show('ed-cards', 85);
+  function question(id, st) {
+    const svc = st.service, p = person(st);
+    switch (id) {
+      case 'q1': return {
+        step: 'Eligibility — 14 days',
+        text: `Did a ${TEAM_WORD[svc]} team have primary responsibility for this patient in the past 14 days?`,
+        note: "Refer to the date of that team's most recent note on this patient.",
+        options: [
+          { v: 'yes', icon: 'Y', label: 'Yes — within 14 days' },
+          { v: 'no',  icon: 'N', label: 'No — more than 14 days, or never on this service' }
+        ]
+      };
+      case 'q2': return {
+        step: 'Eligibility — chief concern',
+        text: 'Is the chief concern cardiac, or a problem actively addressed during the prior admission?',
+        note: 'A new unrelated problem does not qualify.',
+        options: [
+          { v: 'yes', icon: 'Y', label: 'Yes — cardiac or previously addressed issue' },
+          { v: 'no',  icon: 'N', label: 'No — new unrelated problem' }
+        ]
+      };
+      case 'src': return {
+        step: 'Routing — source',
+        text: 'Where is the patient coming from?',
+        note: '',
+        options: [
+          { v: 'ed',  icon: 'ED',  label: 'Emergency Department' },
+          { v: 'icu', icon: 'ICU', label: 'ICU / step-down (downgrade)' }
+        ]
+      };
+      case 'frame': {
+        const opts = [
+          { v: 'wd-day', icon: 'WD', label: 'Weekday, 7 AM – 4 PM' },
+          { v: 'we-am',  icon: 'WE', label: 'Weekend or holiday, 7 AM – noon' },
+          { v: 'we-pm',  icon: 'WE', label: 'Weekend or holiday, noon – 4 PM' }
+        ];
+        if (svc === 'geri') {
+          opts.push({ v: 'after4', icon: 'PM', label: 'Any day, 4 PM – 7 AM', sub: 'Evening and overnight, including after midnight' });
+        } else {
+          opts.push({ v: 'eve',   icon: '4–6', label: 'Any day, 4 – 6 PM' });
+          opts.push({ v: 'night', icon: 'NT',  label: 'Any day, 6 PM – 7 AM', sub: 'Overnight, including after midnight' });
         }
-      } else {
-        // ICU
-        if (val === 'weekday') show('icu-wd', 85);
-        else {
-          if (svc === 'gmed') show('icu-we-gmed', 85);
-          else { setTag('icu-we-noon-tag', svc); show('icu-we-noon', 85); }
-        }
+        return {
+          step: 'Routing — time frame',
+          text: 'During which time frame is the patient currently being admitted?',
+          note: 'Go by the current time. Holidays follow the weekend schedule.',
+          options: opts
+        };
       }
-
-    } else if (q === 'edwdtime') {
-      if (val === 'before4') {
-        return showResult(svc === 'geri' ? 'ed-wd-before4-geri' : 'ed-wd-before4');
+      case 'team': {
+        const weekend = st.frame === 'we-pm';
+        return {
+          step: 'Routing — team',
+          text: 'Which team cared for this patient in the past 14 days?',
+          note: weekend
+            ? 'On weekends and holidays, one GMed team is on long call. The others are non-call teams.'
+            : "Overnight, the current long call team is the one you're backfilling.",
+          options: weekend ? [
+            { v: 'lc',    icon: 'LC', label: 'The long call team' },
+            { v: 'other', icon: 'NC', label: 'A non-call team' }
+          ] : [
+            { v: 'lc',    icon: 'LC', label: 'The current long call team' },
+            { v: 'other', icon: 'GM', label: 'Another GMed team', sub: 'Short call or non-call' }
+          ]
+        };
       }
-      // After 4pm
-      if (svc === 'gmed') show('ed-wd-lc', 90);
-      else return showResult('ed-wd-after4-nar'); // Geri → NAR after 4pm on weekdays
-
-    } else if (q === 'edwdlc') {
-      if (val === 'yes-open') return showResult('ed-wd-lc-open');
-      return showResult('ed-wd-nar');
-
-    } else if (q === 'edwegmed') {
-      if (val === 'lc') show('ed-we-lc-time', 90);
-      else show('ed-we-nc-time', 90);
-
-    } else if (q === 'edwelctime') {
-      if (val === 'before6') return showResult('ed-we-lc-before6');
-      return showResult('ed-we-nar');
-
-    } else if (q === 'edwenctime') {
-      if (val === 'before12') return showResult('ed-we-nc-before12');
-      if (val === 'noon4') return showResult('ed-we-nc-noon4');
-      return showResult('ed-we-nar');
-
-    } else if (q === 'edwegeri') {
-      if (val === 'before12') return showResult('ed-we-geri-before12');
-      if (val === 'noon4') show('ed-we-geri-lc', 90);
-      else return showResult('ed-we-geri-after4'); // after 4pm → NAR
-
-    } else if (q === 'edwegerilc') {
-      if (val === 'not-capped') return showResult('ed-we-geri-lc-open');
-      return showResult('ed-we-geri-lc-capped');
-
-    } else if (q === 'edcards') {
-      if (val === 'before4') return showResult('ed-cards-before4');
-      return showResult('ed-cards-after4');
-
-    } else if (q === 'icuwd') {
-      return showResult(val === 'yes' ? 'icu-wd-yes' : 'icu-wd-no');
-
-    } else if (q === 'icuwegmed') {
-      if (val === 'lc') return showResult('icu-we-lc');
-      show('icu-we-nc', 90);
-
-    } else if (q === 'icuwenc') {
-      return showResult(val === 'yes' ? 'icu-we-nc-yes' : 'icu-we-nc-no');
-
-    } else if (q === 'icuwenoon') {
-      return showResult(val === 'yes' ? 'icu-we-noon-yes' : 'icu-we-noon-no');
+      case 'cap': {
+        const geri = svc === 'geri';
+        const team = geri ? 16 : 20, ind = geri ? 6 : 10;
+        const who = geri ? 'resident' : 'intern';
+        return {
+          step: 'Eligibility — census cap',
+          text: 'Does the original team have room under the census cap?',
+          note: 'Go by the census as it stands right now.',
+          options: [
+            { v: 'yes', icon: 'Y', label: 'Yes — under the cap', sub: `Fewer than ${team} patients, and the original ${who} has fewer than ${ind}` },
+            { v: 'no',  icon: 'N', label: 'No — at the cap',     sub: `${team} patients, or the original ${who} has ${ind}` }
+          ]
+        };
+      }
+      case 'last': return {
+        step: 'Eligibility — last day',
+        text: held(st)
+          ? `At the 7 AM handoff, will it be the original ${p}'s last day of direct patient care?`
+          : `Is today the original ${p}'s last day of direct patient care?`,
+        note: (held(st)
+          ? "This patient is being held over, so the original team takes over at the next 7 AM handoff. Answer for that day, even if it's still before midnight.<br><br>"
+          : '') +
+          "Their last day of direct patient care is the last day they're actually working with patients. For example, if their rotation ends Wednesday but they're off that day, their last day is Tuesday.",
+        options: [
+          { v: 'yes',     icon: 'Y', label: "Yes — that's their last day of direct patient care" },
+          { v: 'no',      icon: 'N', label: held(st) ? "No — they're still on service after that day" : "No — they're still on service after today" },
+          { v: 'rotated', icon: '↗', label: "They've already rotated off service" }
+        ]
+      };
+      case 'work': {
+        const day = held(st) ? 'that day' : 'today';
+        const text = held(st)
+          ? `Will the original ${p} be working at the 7 AM handoff?`
+          : `Is the original ${p} working today?`;
+        if (svc === 'geri') return {
+          step: 'Eligibility — resident working',
+          text,
+          note: '',
+          options: [
+            { v: 'yes', icon: 'Y', label: `Yes — working ${day}` },
+            { v: 'no',  icon: 'N', label: `No — off ${day}` }
+          ]
+        };
+        return {
+          step: 'Eligibility — intern working',
+          text,
+          note: '',
+          options: [
+            { v: 'yes',       icon: 'Y', label: `Yes — working ${day}` },
+            { v: 'res-known', icon: 'N', label: 'No — intern is off', sub: "The team's resident that day previously cared for this patient" },
+            { v: 'res-new',   icon: 'N', label: 'No — intern is off', sub: "The team's resident that day did NOT previously care for this patient" }
+          ]
+        };
+      }
+      case 'cards-time': return {
+        step: 'Routing — time frame',
+        text: 'During which time frame is the patient currently being admitted?',
+        note: 'Go by the current time. The on-call Cardiology team admits from 7 AM to 4 PM. The Cardiology night admitting resident takes over after 4 PM.',
+        options: [
+          { v: 'day',   icon: 'AM', label: '7 AM – 4 PM' },
+          { v: 'night', icon: 'PM', label: '4 PM – 7 AM', sub: 'Evening and overnight, including after midnight' }
+        ]
+      };
+      case 'icu-sched': return {
+        step: 'Routing — ICU',
+        text: 'Is the transfer happening on a weekday, or on a weekend or holiday?',
+        note: 'After hours on any day, the transfer needs MOD approval. Do not transfer to night float.',
+        options: [
+          { v: 'weekday', icon: 'WD', label: 'Weekday — Monday through Friday, non-holiday' },
+          { v: 'weekend', icon: 'WE', label: 'Weekend or holiday' }
+        ]
+      };
+      case 'icu-wd': return {
+        step: 'Routing — ICU weekday',
+        text: 'Was the accepting team notified by 4 PM?',
+        note: '',
+        options: [
+          { v: 'yes', icon: 'Y', label: 'Yes — notified by 4 PM' },
+          { v: 'no',  icon: 'N', label: 'No — not notified by 4 PM' }
+        ]
+      };
+      case 'icu-we-team': return {
+        step: 'Routing — ICU weekend',
+        text: 'Which team cared for this patient in the past 14 days?',
+        note: '',
+        options: [
+          { v: 'lc', icon: 'LC', label: 'The long call team' },
+          { v: 'nc', icon: 'NC', label: 'A non-call team' }
+        ]
+      };
+      case 'icu-we-nc': return {
+        step: 'Routing — ICU weekend',
+        text: 'Was the non-call team notified by noon?',
+        note: '',
+        options: [
+          { v: 'yes', icon: 'Y', label: 'Yes — notified by noon' },
+          { v: 'no',  icon: 'N', label: 'No — missed the noon cutoff' }
+        ]
+      };
+      case 'icu-we-noon': return {
+        step: 'Routing — ICU weekend',
+        text: 'Was the accepting team notified by noon?',
+        note: '',
+        options: [
+          { v: 'yes', icon: 'Y', label: 'Yes — notified by noon' },
+          { v: 'no',  icon: 'N', label: 'No — missed the noon cutoff' }
+        ]
+      };
     }
   }
 
-  function goBack() {
-    if (state.history.length === 0) { restart(); return; }
-
-    // currentScreen = the screen we are currently ON (being left)
-    // history.pop() = the screen we came FROM (going back to)
-    const leavingScreen = currentScreen;
-    const dest = state.history.pop();
-
-    // Remove the answer chip for the screen we are leaving
-    const screenToQMap = {
-      'q1':'q1', 'q2':'q2', 'q3':'q3', 'q4':'q4', 'q5':'q5', 'q6':'q6',
-      'ed-wd-time':'edwdtime', 'ed-wd-lc':'edwdlc',
-      'ed-we-gmed':'edwegmed', 'ed-we-lc-time':'edwelctime', 'ed-we-nc-time':'edwenctime',
-      'ed-we-geri':'edwegeri', 'ed-we-geri-lc':'edwegerilc',
-      'ed-cards':'edcards',
-      'icu-wd':'icuwd', 'icu-we-gmed':'icuwegmed',
-      'icu-we-nc':'icuwenc', 'icu-we-noon':'icuwenoon'
-    };
-    const qKey = screenToQMap[leavingScreen];
-    if (qKey) {
-      const idx = state.answers.findIndex(a => a.q === qKey);
-      if (idx >= 0) state.answers.splice(idx, 1);
-    }
-
-    // Navigate to destination
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + dest).classList.add('active');
-    currentScreen = dest;
-    window.scrollTo(0, 0);
-    if (dest !== 'home') renderAnswerSummary(dest);
-  }
+  // Short labels for the "Your answers" chips
+  const CHIP = {
+    'q1':  { label: 'Within 14 days', values: { yes: 'Yes', no: 'No' } },
+    'q2':  { label: 'Chief concern', values: { yes: 'Cardiac / prior issue', no: 'Unrelated' } },
+    'src': { label: 'Source', values: { ed: 'ED', icu: 'ICU / step-down' } },
+    'frame': { label: 'Time frame', values: {
+      'wd-day': 'Weekday 7 AM – 4 PM', 'we-am': 'Weekend/holiday 7 AM – noon', 'we-pm': 'Weekend/holiday noon – 4 PM',
+      'eve': '4 – 6 PM', 'night': '6 PM – 7 AM', 'after4': '4 PM – 7 AM' } },
+    'team': { label: "Patient's team", values: { lc: 'Long call', other: 'Another team' } },
+    'cap':  { label: 'Census cap', values: { yes: 'Under cap', no: 'At cap' } },
+    'last': { label: 'Last day', values: { yes: 'Last day', no: 'Not last day', rotated: 'Rotated off' } },
+    'work': { label: 'Original intern / resident', values: {
+      yes: 'Working', 'res-known': 'Off — resident knew patient', 'res-new': 'Off — resident new to patient', no: 'Off' } },
+    'cards-time':  { label: 'Time frame', values: { day: '7 AM – 4 PM', night: '4 PM – 7 AM' } },
+    'icu-sched':   { label: 'Schedule', values: { weekday: 'Weekday', weekend: 'Weekend / holiday' } },
+    'icu-wd':      { label: 'Notified by 4 PM', values: { yes: 'Yes', no: 'No' } },
+    'icu-we-team': { label: "Patient's team", values: { lc: 'Long call', nc: 'Non-call team' } },
+    'icu-we-nc':   { label: 'Notified by noon', values: { yes: 'Yes', no: 'No' } },
+    'icu-we-noon': { label: 'Notified by noon', values: { yes: 'Yes', no: 'No' } }
+  };
 
   function capNote(svc) {
-    if (svc === 'gmed')  return 'Census cap: 10 patients per intern, 20 per service. Long call daily admit cap: 8.';
-    if (svc === 'geri')  return 'Census cap: 8 patients per resident, 16 per service. Daily admit cap: 4 total (2 per resident), rolling — MOD discretion.';
     if (svc === 'cards') return 'Census cap: 16 per service (flex to 20 at MOD/chiefs discretion). Intern caps at 4 admissions; resident admits solo from 4–8. Resets at night team arrival.';
     return '';
   }
 
-  const R = {
-    'not-bb': { color:'red', icon:'✕', verdict:'Not a bounceback', title:'This patient does not qualify as a bounceback.', detail:'Either the team has not previously cared for this patient within 14 days, or the chief concern does not meet eligibility criteria for this service.', rules:['Admit as a standard new admission.'] },
-    'last-day': { color:'red', icon:'✕', verdict:'Cannot bounce — last day of patient care', title:'Patient cannot bounce on the original intern\'s (or Geri resident\'s) last day of direct patient care.', detail:'This is the last day they are actually present caring for patients on the rotation — not the last calendar day of the block. Example: the rotation ends Wednesday, but the intern is off that day — Tuesday is their last day, so a patient would not be a bounceback if presenting Tuesday.', rules:['Treat as a standard new admission.','Assign per normal call rules.'] },
-    'geri-no-resident': { color:'red', icon:'✕', verdict:'Cannot bounce today', title:'Geri bounceback requires the original resident to be present.', detail:'The original Geri resident is not present today.', rules:['Hold for the next eligible day when the original resident is present.','See the full VA Geri tab for further details.'] },
-    'hold-intern': { color:'amber', icon:'⏸', verdict:'Hold — await intern return', title:'Hold until the original intern returns.', detail:'The intern is off and the current resident did not previously care for this patient.', rules:['Re-evaluate eligibility at time of actual assignment — not now.','If the intern\'s next day back is also their last day of direct patient care, treat as a new admission.'] },
 
-    // ED WEEKDAY
-    'ed-wd-before4': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Accepting team admits directly.', detail:'Weekday ED bounceback before 4 PM.', rules:['Accepting team writes the H&P.','Does NOT count toward daily admit cap unless full H&P is written.','DOES count toward census cap.','__CAP__'] },
-    'ed-wd-before4-geri': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Geri team admits directly.', detail:'Weekday ED bounceback before 4 PM — Geri accepting team admits.', rules:['Accepting team writes the H&P.','Does NOT count toward daily admit cap unless full H&P is written.','DOES count toward census cap.','__CAP__'] },
-    'ed-wd-lc-open': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Long call team admits directly.', detail:'After 4 PM weekday — bounceback belongs to long call and they have not capped.', rules:['Long call admits and writes the H&P.','Counts toward long call\'s daily admit cap of 8.','Counts toward census cap.','__CAP__'] },
-    'ed-wd-nar': { color:'blue', icon:'→', verdict:'Night admitting resident', title:'NAR admits — held over for original team next morning.', detail:'After 4 PM weekday: belongs to a non-long-call team, or long call is capped.', rules:['NAR writes the H&P overnight.','Patient held over and transferred to original team next morning.','Does not count toward original team\'s daily admit cap.','__CAP__'] },
-    'ed-wd-after4-nar': { color:'blue', icon:'→', verdict:'Night admitting resident', title:'NAR admits — held over for Geri team next morning.', detail:'After 4 PM weekday — Geri bouncebacks go to NAR after the 4 PM cutoff.', rules:['NAR writes the H&P overnight.','Patient held over and transferred to Geri team next morning.','__CAP__'] },
 
-    // ED WEEKEND GMED
-    'ed-we-lc-before6': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Long call team admits directly.', detail:'Weekend ED bounceback — belongs to long call, before 6 PM, not capped.', rules:['Long call admits and writes the H&P.','Counts toward long call\'s admit cap of 8.','Counts toward census cap.','__CAP__'] },
-    'ed-we-nar': { color:'blue', icon:'→', verdict:'Night admitting resident', title:'NAR admits — held over for original team next morning.', detail:'Long call is capped or it is after 6 PM on a weekend.', rules:['NAR writes the H&P.','Patient held over for original team next morning.','__CAP__'] },
-    'ed-we-nc-before12': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Non-call accepting team admits directly.', detail:'Weekend ED bounceback before noon — non-call team can still accept.', rules:['Accepting team writes the H&P.','Does NOT count toward daily admit cap unless the team writes the full H&P.','Counts toward census cap.','__CAP__'] },
-    'ed-we-nc-noon4': { color:'blue', icon:'→', verdict:'Long call admits — holdover', title:'Long call team admits and holds over for original team.', detail:'Weekend noon–4 PM for a non-call team\'s bounceback — long call steps in.', rules:['Long call writes the full H&P.','Counts toward long call\'s admit cap of 8.','Patient transferred to original non-call team next morning.','__CAP__'] },
+  function newAdmission(st) {
+    return st.source === 'icu' ? 'Transfer as a new admission to the on-call team.' : NEW_ADMISSION_ED;
+  }
 
-    // ED WEEKEND GERI
-    'ed-we-geri-before12': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'Geri team admits directly.', detail:'Weekend ED bounceback before noon — Geri team can still accept.', rules:['Geri team writes the H&P.','Does NOT count toward daily admit cap unless the team writes the full H&P.','Counts toward census cap.','__CAP__'] },
-    'ed-we-geri-lc-open': { color:'blue', icon:'→', verdict:'GMed long call admits — holdover', title:'GMed long call admits and holds over for Geri team.', detail:'Weekend noon–4 PM Geri bounceback — GMed long call steps in, same as for GMed non-call teams.', rules:['GMed long call writes the full H&P.','Counts toward GMed long call\'s admit cap of 8.','Patient transferred to Geri team next morning.','__CAP__'] },
-    'ed-we-geri-lc-capped': { color:'blue', icon:'→', verdict:'Night admitting resident', title:'GMed long call is capped — NAR admits instead.', detail:'GMed long call cannot accept; NAR takes over.', rules:['NAR writes the H&P overnight.','Patient held over and transferred to Geri team next morning.','__CAP__'] },
-    'ed-we-geri-after4': { color:'blue', icon:'→', verdict:'Night admitting resident', title:'NAR admits — held over for Geri team next morning.', detail:'After 4 PM on a weekend — NAR takes over for all services.', rules:['NAR writes the H&P overnight.','Patient held over and transferred to Geri team next morning.','__CAP__'] },
+  const AFTER_HOURS = 'After hours (any day): MOD approval required. Do not transfer to night float.';
+  const NO_INTERIM  = 'Do not downgrade to another wards team in the meantime.';
 
-    // ED CARDIOLOGY
-    'ed-cards-before4': { color:'green', icon:'✓', verdict:'Bounceback confirmed', title:'On-call Cardiology team admits.', detail:'Before 4 PM — the on-call Cardiology team admits regardless of which team the bounceback belongs to.', rules:['On-call Cardiology team writes the H&P.','If the bounceback belongs to the non-admitting team and they are still present, they may admit directly for continuity of care — attending discretion.','Both teams round together; lateral transfer to the correct team happens next morning if needed.','__CAP__'] },
-    'ed-cards-after4': { color:'blue', icon:'→', verdict:'Cardiology night admitting resident', title:'Cardiology NAR admits.', detail:'After 4 PM — Cardiology night admitting resident takes over.', rules:['Cardiology NAR writes the H&P.','Both teams round together; transfer to the correct team happens next morning at rounds.','__CAP__'] },
+  // ── RESULT CARDS ──────────────────────────────────────────────
+  // detail and rules entries can be strings or functions of state.
+  const RESULTS = {
+    'not-bb': { color: 'red', icon: '✕', status: 'no', label: 'Why',
+      title: st => st.service === 'cards'
+        ? 'Either no Cardiology team had primary responsibility within 14 days, or the chief concern does not qualify.'
+        : 'No team on this service had primary responsibility for this patient within 14 days.',
+      detail: '',
+      rules: ['Admit as a standard new admission.'] },
 
-    // ICU WEEKDAY
-    'icu-wd-yes': { color:'green', icon:'✓', verdict:'Transfer proceeds today', title:'ICU can transfer to the accepting team today.', detail:'Accepting team notified by the 4 PM weekday cutoff.', rules:['Transfer proceeds today.','Does not count toward daily admit cap (inter-service transfer).','Counts toward census cap.','__CAP__'] },
-    'icu-wd-no': { color:'red', icon:'✕', verdict:'ICU retains patient', title:'Transfer cannot proceed — ICU retains the patient.', detail:'Accepting team was not notified by the 4 PM weekday cutoff.', rules:['ICU continues to care for the patient.','Do NOT transfer to another wards team as an interim — this creates unnecessary handoffs.','Attempt transfer again the following day.'] },
+    // ── Eligibility stops
+    'at-cap': { color: 'red', icon: '✕', status: 'no', label: 'Why',
+      title: 'The original team is at census cap.',
+      detail: '', rules: [NEW_ADMISSION_ED] },
+    'icu-at-cap': { color: 'amber', icon: '⏸', status: 'wait', label: 'Why',
+      title: 'The original team is at census cap.',
+      detail: '', rules: [NO_INTERIM, 'Try the transfer again the following day.'] },
+    'last-day': { color: 'red', icon: '✕', status: 'no', label: 'Why',
+      title: st => held(st)
+        ? `The 7 AM handoff falls on the original ${person(st)}'s last day of direct patient care.`
+        : `Today is the original ${person(st)}'s last day of direct patient care.`,
+      detail: '',
+      rules: [newAdmission] },
+    'rotated-off': { color: 'red', icon: '✕', status: 'no', label: 'Why',
+      title: st => `The original ${person(st)} has already rotated off service.`,
+      detail: '',
+      rules: [newAdmission] },
+    'off-ed': { color: 'amber', icon: '→', status: 'redirect', label: 'Why',
+      title: "The original team can't take this patient that day.",
+      detail: '',
+      rules: [NEW_ADMISSION_ED, 'The patient may transfer to the original team later.'] },
+    'icu-hold': { color: 'amber', icon: '⏸', status: 'wait', label: 'Why',
+      title: st => `The ICU keeps the patient until the original ${person(st)} is back.`,
+      detail: '',
+      rules: [
+        "Try the transfer again on the day they're back.",
+        "If that day is their last day of direct patient care, or they've rotated off, transfer as a new admission to the on-call team instead.",
+        NO_INTERIM] },
 
-    // ICU WEEKEND GMED
-    'icu-we-lc': { color:'green', icon:'✓', verdict:'Transfer proceeds', title:'Long call team accepts the ICU bounceback.', detail:'Weekend ICU bounceback to GMed long call — no noon cutoff applies.', rules:['Transfer proceeds to long call.','ICU may not use long call as a conduit to reach a non-call team.','After-hours transfers require MOD approval — see ICU Nuts & Bolts.','__CAP__'] },
-    'icu-we-nc-yes': { color:'green', icon:'✓', verdict:'Transfer proceeds today', title:'ICU can transfer to the non-call team today.', detail:'Weekend ICU bounceback — non-call team notified by noon cutoff.', rules:['Transfer proceeds today.','Counts toward census cap.','__CAP__'] },
-    'icu-we-nc-no': { color:'red', icon:'✕', verdict:'ICU retains patient', title:'Transfer cannot proceed — ICU retains the patient.', detail:'Non-call team was not notified by the noon weekend cutoff.', rules:['ICU retains the patient.','Do NOT transfer to long call as a pass-through — not permitted.','After-hours transfers require MOD approval — see ICU Nuts & Bolts.'] },
+    // ── ED: original team takes the patient today
+    'orig-admits': { color: 'green', icon: '✓', status: 'yes', label: 'Who admits',
+      title: 'The original team admits the patient.',
+      detail: '',
+      rules: [
+        "Doesn't count toward their daily admission cap unless they write the full H&P.",
+        '__CAP__'] },
+    'orig-admits-geri': { color: 'green', icon: '✓', status: 'yes', label: 'Who admits',
+      title: 'The Geri team admits the patient.',
+      detail: st => st.frame === 'we-am' ? '' : 'The Geri team takes its own bouncebacks until 4 PM, even after it comes off the admitting pager at 2 PM.',
+      rules: [
+        "Doesn't count toward their daily admission cap unless they write the full H&P.",
+        '__CAP__'] },
+    'lc-own': { color: 'green', icon: '✓', status: 'yes', label: 'Who admits',
+      title: 'Long call admits its own bounceback.',
+      detail: '',
+      rules: [
+        'Long call writes the H&P, so it counts toward their daily admission cap.',
+        '__CAP__'] },
 
-    // ICU WEEKEND GERI + CARDS
-    'icu-we-noon-yes': { color:'green', icon:'✓', verdict:'Transfer proceeds today', title:'ICU can transfer to the accepting team today.', detail:'Accepting team notified by the noon weekend cutoff.', rules:['Transfer proceeds today.','Counts toward census cap.','__CAP__'] },
-    'icu-we-noon-no': { color:'red', icon:'✕', verdict:'ICU retains patient', title:'Transfer cannot proceed — ICU retains the patient.', detail:'Accepting team was not notified by the noon weekend cutoff.', rules:['ICU retains the patient.','After-hours transfers require MOD approval — see ICU Nuts & Bolts.'] }
+    // ── ED: held over to the next 7 AM handoff
+    'lc-hold': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: 'Long call admits and holds over for the original team.',
+      detail: '',
+      rules: [
+        'Long call writes the H&P, so it counts toward their daily admission cap.',
+        'The original team assumes care at the next 7 AM handoff.',
+        '__CAP__'] },
+    'lc-hold-geri': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: 'GMed long call admits and holds over for the Geri team.',
+      detail: '',
+      rules: [
+        'GMed long call writes the H&P, so it counts toward their daily admission cap.',
+        'The Geri team assumes care at the next 7 AM handoff.',
+        '__CAP__'] },
+    'nar-hold': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: 'The NAR admits and holds over for the original team.',
+      detail: st => st.frame === 'eve' ? 'Between 4 and 6 PM, the NAR admits bouncebacks for teams other than long call, even if long call still has room.' : '',
+      rules: [
+        "The NAR writes the H&P, so it doesn't count toward the original team's daily admission cap.",
+        'The original team assumes care at the next 7 AM handoff.',
+        '__CAP__'] },
+    'nar-lc-list': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: "The NAR admits and places the patient on long call's list.",
+      detail: '',
+      rules: [
+        "The NAR writes the H&P, so it doesn't count toward long call's daily admission cap.",
+        'Long call assumes care at the next 7 AM handoff.',
+        '__CAP__'] },
+    'nar-hold-geri': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: 'The NAR admits and holds over for the Geri team.',
+      detail: '',
+      rules: [
+        "The NAR writes the H&P, so it doesn't count toward Geri's daily admission cap.",
+        'The Geri team assumes care at the next 7 AM handoff.',
+        '__CAP__'] },
+
+    // ── ED: Cardiology (unchanged)
+    'ed-cards-before4': { color: 'green', icon: '✓', status: 'yes', label: 'Who admits',
+      title: 'On-call Cardiology team admits.',
+      detail: '7 AM – 4 PM: the on-call Cardiology team admits regardless of which team the bounceback belongs to.',
+      rules: ['On-call Cardiology team writes the H&P.',
+        'If the bounceback belongs to the non-admitting team and they are still present, they may admit for continuity of care — attending discretion.',
+        'Both teams round together; lateral transfer to the correct team happens next morning if needed.', '__CAP__'] },
+    'ed-cards-after4': { color: 'blue', icon: '→', status: 'yes', label: 'Who admits',
+      title: 'Cardiology NAR admits.',
+      detail: 'After 4 PM: the Cardiology night admitting resident takes over.',
+      rules: ['Cardiology NAR writes the H&P.',
+        'Both teams round together; transfer to the correct team happens next morning at rounds.', '__CAP__'] },
+
+    // ── ICU
+    'icu-wd-yes': { color: 'green', icon: '✓', status: 'yes', label: 'Transfer',
+      title: 'The ICU can transfer to the accepting team today.',
+      detail: '',
+      rules: ['Does not count toward the daily admission cap (inter-service transfer).', AFTER_HOURS, '__CAP__'] },
+    'icu-wd-no': { color: 'amber', icon: '⏸', status: 'wait', label: 'Why',
+      title: "The accepting team wasn't notified by the 4 PM weekday cutoff.",
+      detail: '',
+      rules: [NO_INTERIM, 'Try the transfer again the following day.'] },
+    'icu-we-lc': { color: 'green', icon: '✓', status: 'yes', label: 'Transfer',
+      title: 'The long call team accepts the ICU bounceback.',
+      detail: '',
+      rules: ['The ICU may not use long call as a pass-through to reach a non-call team.', AFTER_HOURS, '__CAP__'] },
+    'icu-we-nc-yes': { color: 'green', icon: '✓', status: 'yes', label: 'Transfer',
+      title: 'The ICU can transfer to the non-call team today.',
+      detail: '',
+      rules: [AFTER_HOURS, '__CAP__'] },
+    'icu-we-nc-no': { color: 'amber', icon: '⏸', status: 'wait', label: 'Why',
+      title: "The non-call team wasn't notified by the noon weekend cutoff.",
+      detail: '',
+      rules: ['Do not transfer to long call as a pass-through.', 'Try the transfer again the following day.'] },
+    'icu-we-noon-yes': { color: 'green', icon: '✓', status: 'yes', label: 'Transfer',
+      title: 'The ICU can transfer to the accepting team today.',
+      detail: '',
+      rules: [AFTER_HOURS, '__CAP__'] },
+    'icu-we-noon-no': { color: 'amber', icon: '⏸', status: 'wait', label: 'Why',
+      title: "The accepting team wasn't notified by the noon weekend cutoff.",
+      detail: '',
+      rules: [NO_INTERIM, 'Try the transfer again the following day.'] }
   };
 
-  function showResult(key) {
-    // Commit the pending answer chip before showing result
-    if (pendingAnswer) {
-      const map = ANSWER_LABELS[pendingAnswer.q];
-      if (map) {
-        const label = map.values[pendingAnswer.val] || pendingAnswer.val;
-        const idx = state.answers.findIndex(a => a.q === pendingAnswer.q);
-        if (idx >= 0) state.answers.splice(idx, 1);
-        state.answers.push({ q: pendingAnswer.q, step: map.label, label });
-      }
-      pendingAnswer = null;
+
+  const BANNER = {
+    yes:      { cls: 'yes',  text: '✓ Yes — this is a bounceback' },
+    no:       { cls: 'no',   text: '✕ No — not a bounceback' },
+    redirect: { cls: 'warn', text: 'Yes — a bounceback, but it goes to the on-call team' },
+    wait:     { cls: 'warn', text: 'Not yet — the ICU keeps the patient for now' }
+  };
+
+  // ── UI ────────────────────────────────────────────────────────
+  // The path of answers is the single source of truth. Every render
+  // replays it from the start, so Back is just "drop the last answer".
+  const ui = { service: null, path: [] };
+
+  const val = (x, st) => (typeof x === 'function' ? x(st) : x);
+
+  function chipsHtml(label) {
+    let html = `<details class="answers"><summary>${label} (${ui.path.length + 1})</summary><div class="answer-summary">`;
+    html += `<div class="answer-chip"><span class="answer-chip-step">Service</span><span class="answer-chip-val">${SVC_NAME[ui.service]}</span></div>`;
+    for (const [q, v] of ui.path) {
+      const c = CHIP[q];
+      if (!c) continue;
+      html += `<div class="answer-chip"><span class="answer-chip-step">${c.label}</span><span class="answer-chip-val">${c.values[v] || v}</span></div>`;
     }
-    const r = R[key];
-    const cap = capNote(state.service);
-    const rulesHtml = r.rules.map(rule => {
-      const text = rule === '__CAP__' ? cap : rule;
-      if (!text) return '';
-      return `<div class="result-rule ${r.color}">${text}</div>`;
+    return html + '</div></details>';
+  }
+
+  function tagHtml(svc) {
+    return `<div class="service-tag tag-${svc}">${SVC_NAME[svc]}</div>`;
+  }
+
+  function activate(id, progress) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('progress').style.width = progress + '%';
+    window.scrollTo(0, 0);
+  }
+
+  function render() {
+    const { st, step } = BB.run(ui.service, ui.path);
+    if (step.result) return renderResult(step.result, st);
+    const qd = question(step.screen, st);
+    const opts = qd.options.map(o => `
+      <button class="opt-btn" onclick="choose('${step.screen}','${o.v}')">
+        <div class="opt-icon">${o.icon}</div>
+        <div class="opt-label">${o.sub ? `<div>${o.label}</div><div class="opt-sub">${o.sub}</div>` : o.label}</div>
+      </button>`).join('');
+    document.getElementById('screen-question').innerHTML = `
+      <p class="step-label">${qd.step}</p>
+      ${tagHtml(ui.service)}
+      <p class="question">${qd.text}</p>
+      ${qd.note ? `<p class="question-note">${qd.note}</p>` : ''}
+      <div class="options">${opts}</div>
+      <div class="result-actions">
+        <button class="result-back-btn" onclick="goBack()">← Back</button>
+        <button class="restart-btn" onclick="restart()">⌂ Home</button>
+      </div>
+      ${ui.path.length ? chipsHtml('Show your answers so far') : ''}`;
+    activate('screen-question', Math.min(90, 10 + ui.path.length * 13));
+  }
+
+  function renderResult(key, st) {
+    const r = RESULTS[key];
+    const cap = capNote(ui.service);
+    const rules = r.rules.map(rule => {
+      const text = rule === '__CAP__' ? cap : val(rule, st);
+      return text ? `<div class="result-rule ${r.color}">${text}</div>` : '';
     }).join('');
-
-    // Build answer chip summary for top of result
-    const svcNames = { gmed: 'General Medicine', geri: 'Geriatrics', cards: 'Cardiology' };
-    let chipsHtml = `<div class="answer-summary" style="margin-bottom:20px;">
-      <div class="answer-summary-label">Your answers</div>
-      <div class="answer-chip"><span class="answer-chip-step">Service</span><span class="answer-chip-val">${svcNames[state.service] || state.service}</span></div>`;
-    state.answers.forEach(a => {
-      chipsHtml += `<div class="answer-chip"><span class="answer-chip-step">${a.step}</span><span class="answer-chip-val">${a.label}</span></div>`;
-    });
-    chipsHtml += '</div>';
-
-    document.getElementById('result-content').innerHTML = chipsHtml + `
+    document.getElementById('result-answers').innerHTML = chipsHtml('Show your answers');
+    document.getElementById('result-content').innerHTML = `
       <div class="result-card">
+        <div class="result-banner ${BANNER[r.status].cls}">${BANNER[r.status].text}</div>
         <div class="result-header">
           <div class="result-icon ${r.color}">${r.icon}</div>
           <div>
-            <div class="result-verdict ${r.color}">${r.verdict}</div>
-            <div class="result-title">${r.title}</div>
+            <div class="result-verdict ${r.color}">${r.label}</div>
+            <div class="result-title">${val(r.title, st)}</div>
           </div>
         </div>
         <div class="result-divider"></div>
         <div class="result-body">
-          <p class="result-detail">${r.detail}</p>
-          ${rulesHtml}
+          ${val(r.detail, st) ? `<p class="result-detail">${val(r.detail, st)}</p>` : ''}
+          ${rules}
         </div>
       </div>`;
-    show('result', 100);
+    activate('screen-result', 100);
   }
 
-  function restart() {
-    state.service = null; state.history = []; state.source = null;
-    state.daytype = null; state.answers = [];
-    pendingAnswer = null;
-    show('home', 0);
-  }
+  function startService(svc) { ui.service = svc; ui.path = []; render(); }
+  function choose(q, v)      { ui.path.push([q, v]); render(); }
+  function goBack()          { if (!ui.path.length) return restart(); ui.path.pop(); render(); }
+  function restart()         { ui.service = null; ui.path = []; activate('screen-home', 0); }
 </script>
 </body>
 </html>
