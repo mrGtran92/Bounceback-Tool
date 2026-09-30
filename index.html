@@ -190,6 +190,8 @@
   function firstScreen() { return 'q1'; }
 
   const S = id => ({ screen: id });
+  // Routes where the original team is long call and long call is on the pager right now
+  const LC_ON_PAGER = ['lc-own', 'icu-we-lc'];
   const R = key => ({ result: key });
 
   // Where an ED bounceback goes, by service, time frame and team
@@ -268,6 +270,8 @@
       case 'last':
         if (v === 'yes') return R('last-day');
         if (v === 'rotated') return R('rotated-off');
+        // Long call on the pager means the whole team is there — no need to ask
+        if (LC_ON_PAGER.includes(st.route)) return R(st.route);
         return S('work');
       case 'work':
         if (v === 'yes' || v === 'res-known') return R(st.source === 'icu' ? st.route : edResultKey(st));

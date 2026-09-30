@@ -179,6 +179,7 @@
 //         'handoff' = held over to the next 7 AM handoff
 // ─────────────────────────────────────────────────────────────────
 const OK = [['cap','yes'],['last','no'],['work','yes']];   // eligible, intern/resident working
+const LC_OK = [['cap','yes'],['last','no']];               // long call on the pager: working question is skipped
 const ED  = [['q1','yes'],['src','ed']];
 const ICU = [['q1','yes'],['src','icu']];
 
@@ -189,11 +190,11 @@ const SCENARIOS = [
   { group: 'GMed · ED routing', name: 'Weekend 7 AM – noon · any team → original team admits', service: 'gmed',
     answers: [...ED, ['frame','we-am'], ...OK], expected: 'orig-admits', anchor: 'today' },
   { group: 'GMed · ED routing', name: 'Weekend noon – 4 PM · long call → long call admits', service: 'gmed',
-    answers: [...ED, ['frame','we-pm'], ['team','lc'], ...OK], expected: 'lc-own', anchor: 'today' },
+    answers: [...ED, ['frame','we-pm'], ['team','lc'], ...LC_OK], expected: 'lc-own', anchor: 'today' },
   { group: 'GMed · ED routing', name: 'Weekend noon – 4 PM · non-call team → long call holds over', service: 'gmed',
     answers: [...ED, ['frame','we-pm'], ['team','other'], ...OK], expected: 'lc-hold', anchor: 'handoff' },
   { group: 'GMed · ED routing', name: '4 – 6 PM · long call → long call admits', service: 'gmed',
-    answers: [...ED, ['frame','eve'], ['team','lc'], ...OK], expected: 'lc-own', anchor: 'today' },
+    answers: [...ED, ['frame','eve'], ['team','lc'], ...LC_OK], expected: 'lc-own', anchor: 'today' },
   { group: 'GMed · ED routing', name: '4 – 6 PM · another team → NAR holds over', service: 'gmed',
     answers: [...ED, ['frame','eve'], ['team','other'], ...OK], expected: 'nar-hold', anchor: 'handoff' },
   { group: 'GMed · ED routing', name: "6 PM – 7 AM · long call → NAR places on long call's list", service: 'gmed',
@@ -202,6 +203,8 @@ const SCENARIOS = [
     answers: [...ED, ['frame','night'], ['team','other'], ...OK], expected: 'nar-hold', anchor: 'handoff' },
 
   // ── GMED · ED ELIGIBILITY ──────────────────────────────────────
+  { group: 'GMed · ED eligibility', name: "Long call's own bounceback on the intern's last day → not a bounceback", service: 'gmed',
+    answers: [...ED, ['frame','eve'], ['team','lc'], ['cap','yes'], ['last','yes']], expected: 'last-day', anchor: 'today' },
   { group: 'GMed · ED eligibility', name: 'Not cared for within 14 days', service: 'gmed',
     answers: [['q1','no']], expected: 'not-bb' },
   { group: 'GMed · ED eligibility', name: 'Original team at census cap', service: 'gmed',
@@ -249,7 +252,7 @@ const SCENARIOS = [
   { group: 'GMed · ICU', name: 'Weekday · missed 4 PM', service: 'gmed',
     answers: [...ICU, ['icu-sched','weekday'], ['icu-wd','no']], expected: 'icu-wd-no' },
   { group: 'GMed · ICU', name: 'Weekend · long call', service: 'gmed',
-    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','lc'], ...OK], expected: 'icu-we-lc' },
+    answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','lc'], ...LC_OK], expected: 'icu-we-lc' },
   { group: 'GMed · ICU', name: 'Weekend · non-call notified by noon', service: 'gmed',
     answers: [...ICU, ['icu-sched','weekend'], ['icu-we-team','nc'], ['icu-we-nc','yes'], ...OK], expected: 'icu-we-nc-yes' },
   { group: 'GMed · ICU', name: 'Weekend · non-call missed noon', service: 'gmed',
@@ -331,6 +334,7 @@ function runScenario(BB, s) {
 // for example after a cutoff time, a question, or a card is changed.
 // ─────────────────────────────────────────────────────────────────
 const MAX_QUESTIONS = 8;
+const LC_ON_PAGER_RESULTS = ['lc-own', 'icu-we-lc'];
 
 function loadScreens(html, BB) {
   const m = html.match(/<script>\n([\s\S]*?)<\/script>\s*<\/body>/);
@@ -375,7 +379,7 @@ const PATH_RULES = [
       if (p.svc === 'cards') return answer(p, 'q2') !== 'yes' ? 'Cardiology Yes without a qualifying chief concern' : undefined;
       if (answer(p, 'cap') !== 'yes') return 'Yes without the census cap check';
       if (answer(p, 'last') !== 'no') return 'Yes on the last day or after rotating off';
-      if (!['yes', 'res-known'].includes(answer(p, 'work'))) return 'Yes with the intern/resident off';
+      if (!LC_ON_PAGER_RESULTS.includes(p.key) && !['yes', 'res-known'].includes(answer(p, 'work'))) return 'Yes with the intern/resident off';
     } },
   { group: 'Rules · Eligibility', name: '"No" to the 14-day question always ends at Not a bounceback',
     check: p => answer(p, 'q1') === 'no' && p.key !== 'not-bb' ? 'ended at ' + p.key : undefined },
@@ -460,6 +464,8 @@ const PATH_RULES = [
         if (step.screen !== p.path[i][0]) return 'step ' + (i + 1) + ' showed ' + (step.screen || step.result);
       }
     } },
+  { group: 'Rules · Structure', name: 'When long call is on the pager, the tool never asks whether the intern is working',
+    check: p => LC_ON_PAGER_RESULTS.includes(p.key) && answer(p, 'work') ? 'asked the working question' : undefined },
   { group: 'Rules · Structure', name: `No path takes more than ${MAX_QUESTIONS} questions`,
     check: p => p.path.length > MAX_QUESTIONS ? p.path.length + ' questions' : undefined },
 ];
